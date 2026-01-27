@@ -99,9 +99,19 @@ function loadGameBoard() {
         .then(html => {
             const boardContainer = document.getElementById('board-container');
             if (boardContainer) {
-                // Extraer solo el contenido del body
+                // Extraer el contenido del body y los estilos del head
                 const parser = new DOMParser();
                 const doc = parser.parseFromString(html, 'text/html');
+                
+                // Insertar estilos del tablero
+                const styles = doc.querySelectorAll('style');
+                styles.forEach(style => {
+                    const newStyle = document.createElement('style');
+                    newStyle.textContent = style.textContent;
+                    document.head.appendChild(newStyle);
+                });
+                
+                // Insertar contenido del body
                 boardContainer.innerHTML = doc.body.innerHTML;
                 
                 // Ejecutar scripts del tablero
