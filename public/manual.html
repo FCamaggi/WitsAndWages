@@ -1,337 +1,388 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="es">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Manual - Wits & Wagers Vegas</title>
-  
-  <!-- Favicons -->
-  <link rel="icon" type="image/svg+xml" href="/favicon.svg">
-  <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
-  <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
-  
-  <style>
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
-    }
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Manual - Wits & Wagers Vegas</title>
 
-    body {
-      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-      background: #1a1a1a;
-      color: #ffffff;
-      padding: 2rem;
-      line-height: 1.6;
-    }
+    <!-- Favicons -->
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png" />
+    <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png" />
 
-    .container {
-      max-width: 900px;
-      margin: 0 auto;
-      background: #2d2d2d;
-      padding: 2rem;
-      border-radius: 12px;
-    }
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
 
-    h1 {
-      color: #d4af37;
-      font-size: 2.5rem;
-      margin-bottom: 1rem;
-      text-align: center;
-    }
-
-    h2 {
-      color: #d4af37;
-      font-size: 1.8rem;
-      margin-top: 2rem;
-      margin-bottom: 1rem;
-      border-bottom: 2px solid #d4af37;
-      padding-bottom: 0.5rem;
-    }
-
-    h3 {
-      color: #c41e3a;
-      font-size: 1.4rem;
-      margin-top: 1.5rem;
-      margin-bottom: 0.8rem;
-    }
-
-    p {
-      margin-bottom: 1rem;
-      color: #cccccc;
-    }
-
-    ul, ol {
-      margin-left: 2rem;
-      margin-bottom: 1rem;
-      color: #cccccc;
-    }
-
-    li {
-      margin-bottom: 0.5rem;
-    }
-
-    strong {
-      color: #ffffff;
-    }
-
-    .highlight {
-      background: rgba(212, 175, 55, 0.2);
-      padding: 1rem;
-      border-left: 4px solid #d4af37;
-      margin: 1rem 0;
-      border-radius: 4px;
-    }
-
-    .example {
-      background: rgba(196, 30, 58, 0.2);
-      padding: 1rem;
-      border-left: 4px solid #c41e3a;
-      margin: 1rem 0;
-      border-radius: 4px;
-    }
-
-    .back-btn {
-      display: inline-block;
-      padding: 0.8rem 1.5rem;
-      background: #d4af37;
-      color: #1a1a1a;
-      text-decoration: none;
-      border-radius: 8px;
-      font-weight: bold;
-      transition: all 0.3s ease;
-      margin-bottom: 2rem;
-    }
-
-    .back-btn:hover {
-      background: #b8941f;
-      transform: translateY(-2px);
-    }
-
-    table {
-      width: 100%;
-      border-collapse: collapse;
-      margin: 1rem 0;
-      background: #1a1a1a;
-    }
-
-    th, td {
-      padding: 0.8rem;
-      text-align: left;
-      border: 1px solid #4a4a4a;
-    }
-
-    th {
-      background: #d4af37;
-      color: #1a1a1a;
-      font-weight: bold;
-    }
-
-    .note {
-      background: rgba(40, 167, 69, 0.2);
-      padding: 1rem;
-      border-left: 4px solid #28a745;
-      margin: 1rem 0;
-      border-radius: 4px;
-    }
-
-    @media (max-width: 768px) {
       body {
-        padding: 1rem;
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        background: #1a1a1a;
+        color: #ffffff;
+        padding: 2rem;
+        line-height: 1.6;
       }
 
       .container {
-        padding: 1.5rem;
+        max-width: 900px;
+        margin: 0 auto;
+        background: #2d2d2d;
+        padding: 2rem;
+        border-radius: 12px;
       }
 
       h1 {
-        font-size: 2rem;
+        color: #d4af37;
+        font-size: 2.5rem;
+        margin-bottom: 1rem;
+        text-align: center;
       }
 
       h2 {
-        font-size: 1.5rem;
+        color: #d4af37;
+        font-size: 1.8rem;
+        margin-top: 2rem;
+        margin-bottom: 1rem;
+        border-bottom: 2px solid #d4af37;
+        padding-bottom: 0.5rem;
       }
-    }
-  </style>
-</head>
-<body>
-  <div class="container">
-    <a href="/" class="back-btn">← Volver al Inicio</a>
 
-    <h1>🎰 Manual de Juego</h1>
-    <h2 style="text-align: center; border: none;">Wits & Wagers Vegas</h2>
+      h3 {
+        color: #c41e3a;
+        font-size: 1.4rem;
+        margin-top: 1.5rem;
+        margin-bottom: 0.8rem;
+      }
 
-    <div class="highlight">
-      <p><strong>Wits & Wagers</strong> trae la energía y la emoción de Las Vegas a tu hogar. Es un juego de apuestas donde no necesitas saber ni una sola respuesta para ganar. Cualquiera puede ganar apostando a las respuestas de otros jugadores. ¡Así que arriésgate, prueba tu suerte y sé un gran apostador de Vegas!</p>
+      p {
+        margin-bottom: 1rem;
+        color: #cccccc;
+      }
+
+      ul,
+      ol {
+        margin-left: 2rem;
+        margin-bottom: 1rem;
+        color: #cccccc;
+      }
+
+      li {
+        margin-bottom: 0.5rem;
+      }
+
+      strong {
+        color: #ffffff;
+      }
+
+      .highlight {
+        background: rgba(212, 175, 55, 0.2);
+        padding: 1rem;
+        border-left: 4px solid #d4af37;
+        margin: 1rem 0;
+        border-radius: 4px;
+      }
+
+      .example {
+        background: rgba(196, 30, 58, 0.2);
+        padding: 1rem;
+        border-left: 4px solid #c41e3a;
+        margin: 1rem 0;
+        border-radius: 4px;
+      }
+
+      .back-btn {
+        display: inline-block;
+        padding: 0.8rem 1.5rem;
+        background: #d4af37;
+        color: #1a1a1a;
+        text-decoration: none;
+        border-radius: 8px;
+        font-weight: bold;
+        transition: all 0.3s ease;
+        margin-bottom: 2rem;
+      }
+
+      .back-btn:hover {
+        background: #b8941f;
+        transform: translateY(-2px);
+      }
+
+      table {
+        width: 100%;
+        border-collapse: collapse;
+        margin: 1rem 0;
+        background: #1a1a1a;
+      }
+
+      th,
+      td {
+        padding: 0.8rem;
+        text-align: left;
+        border: 1px solid #4a4a4a;
+      }
+
+      th {
+        background: #d4af37;
+        color: #1a1a1a;
+        font-weight: bold;
+      }
+
+      .note {
+        background: rgba(40, 167, 69, 0.2);
+        padding: 1rem;
+        border-left: 4px solid #28a745;
+        margin: 1rem 0;
+        border-radius: 4px;
+      }
+
+      @media (max-width: 768px) {
+        body {
+          padding: 1rem;
+        }
+
+        .container {
+          padding: 1.5rem;
+        }
+
+        h1 {
+          font-size: 2rem;
+        }
+
+        h2 {
+          font-size: 1.5rem;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <a href="/" class="back-btn">← Volver al Inicio</a>
+
+      <h1>🎰 Manual de Juego</h1>
+      <h2 style="text-align: center; border: none">Wits & Wagers Vegas</h2>
+
+      <div class="highlight">
+        <p>
+          <strong>Wits & Wagers</strong> trae la energía y la emoción de Las
+          Vegas a tu hogar. Es un juego de apuestas donde no necesitas saber ni
+          una sola respuesta para ganar. Cualquiera puede ganar apostando a las
+          respuestas de otros jugadores. ¡Así que arriésgate, prueba tu suerte y
+          sé un gran apostador de Vegas!
+        </p>
+      </div>
+
+      <h2>📋 Preparación del Juego</h2>
+
+      <h3>Jugadores</h3>
+      <ul>
+        <li>De 2 a 7 jugadores</li>
+        <li>Cada jugador comienza con 2 Fichas de Apuesta</li>
+        <li>El juego dura 7 rondas</li>
+      </ul>
+
+      <h3>Roles</h3>
+      <ul>
+        <li>
+          <strong>Host:</strong> Controla la pantalla principal y maneja el
+          flujo del juego
+        </li>
+        <li>
+          <strong>Jugadores:</strong> Responden preguntas y hacen apuestas desde
+          sus dispositivos móviles
+        </li>
+      </ul>
+
+      <h2>🎮 Cómo Jugar</h2>
+
+      <h3>1. Responder la Pregunta</h3>
+      <p>
+        El host lee una pregunta en voz alta. Cada jugador escribe una respuesta
+        (estimación) desde su dispositivo móvil.
+      </p>
+
+      <div class="note">
+        <strong>💡 Nota:</strong> No te preocupes si no sabes la respuesta
+        exacta. ¡Solo haz tu mejor estimación!
+      </div>
+
+      <h3>2. Ordenar las Respuestas</h3>
+      <p>
+        Una vez que todos han respondido, las respuestas se ordenan
+        automáticamente de menor a mayor en el tablero:
+      </p>
+      <ul>
+        <li>La respuesta más baja siempre está en un espacio rojo</li>
+        <li>
+          Si múltiples jugadores escriben la misma respuesta, se colocan lado a
+          lado
+        </li>
+      </ul>
+
+      <h3>3. Hacer Apuestas</h3>
+      <p>
+        Tu objetivo es apostar a la <strong>respuesta ganadora</strong>. La
+        respuesta ganadora es la que está
+        <strong>más cerca de la respuesta correcta, sin pasarse</strong>.
+      </p>
+
+      <p><strong>Puedes apostar en:</strong></p>
+      <ul>
+        <li>
+          Una respuesta específica (puede ser la tuya o la de otro jugador)
+        </li>
+        <li>El espacio "TODAS LAS RESPUESTAS SON MUY ALTAS" (6 a 1)</li>
+        <li>Los espacios "ROJO 1 a 1" o "NEGRO 1 a 1"</li>
+      </ul>
+
+      <div class="example">
+        <strong>Opciones de Apuesta:</strong><br />
+        1. Apostar <strong>ambas</strong> fichas en el mismo espacio<br />
+        2. <strong>Dividir</strong> tus fichas entre dos espacios diferentes
+      </div>
+
+      <h3>4. Determinar Ganadores</h3>
+      <p>Después de que todos apuesten, se revela la respuesta correcta:</p>
+      <ul>
+        <li>
+          <strong>Bono:</strong> El jugador con la respuesta ganadora recibe
+          fichas de póquer según la ronda
+        </li>
+        <li>
+          <strong>Pagos:</strong> Todos los que apostaron correctamente reciben
+          dinero según las probabilidades
+        </li>
+      </ul>
+
+      <h2>💰 Tabla de Pagos</h2>
+      <p>
+        El pago se calcula multiplicando tu apuesta por las probabilidades del
+        espacio:
+      </p>
+
+      <table>
+        <thead>
+          <tr>
+            <th>Probabilidades</th>
+            <th>Ejemplo (apuesta de $2)</th>
+            <th>Pago Total</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>6 a 1</td>
+            <td>2 + (2 × 6)</td>
+            <td>$14</td>
+          </tr>
+          <tr>
+            <td>5 a 1</td>
+            <td>2 + (2 × 5)</td>
+            <td>$12</td>
+          </tr>
+          <tr>
+            <td>4 a 1</td>
+            <td>2 + (2 × 4)</td>
+            <td>$10</td>
+          </tr>
+          <tr>
+            <td>3 a 1</td>
+            <td>2 + (2 × 3)</td>
+            <td>$8</td>
+          </tr>
+          <tr>
+            <td>2 a 1</td>
+            <td>2 + (2 × 2)</td>
+            <td>$6</td>
+          </tr>
+          <tr>
+            <td>1 a 1</td>
+            <td>2 + (2 × 1)</td>
+            <td>$4</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <div class="highlight">
+        <strong>🎁 Bonos por Ronda:</strong><br />
+        El jugador que escriba la respuesta ganadora recibe un bono:<br />
+        Ronda 1: $100 | Ronda 2: $200 | Ronda 3: $300 | Ronda 4: $400<br />
+        Ronda 5: $500 | Ronda 6: $600 | Ronda 7: $700
+      </div>
+
+      <h2>🎯 Reglas Especiales</h2>
+
+      <h3>Respuestas Duplicadas</h3>
+      <p>Si múltiples jugadores escriben la misma respuesta ganadora:</p>
+      <ul>
+        <li>Todos reciben el bono completo</li>
+        <li>Al apostar, elige el espacio con mejores probabilidades</li>
+        <li>Todos los espacios con esa respuesta pagan</li>
+      </ul>
+
+      <h3>Todas las Respuestas son Muy Altas</h3>
+      <p>Si todas las respuestas son mayores que la respuesta correcta:</p>
+      <ul>
+        <li>Solo el espacio "6 a 1" (Todas muy altas) paga</li>
+        <li>Nadie recibe el bono de la ronda</li>
+      </ul>
+
+      <h3>Apostar Dinero Ganado</h3>
+      <p>
+        Después de la primera ronda, puedes usar el dinero que has ganado para
+        aumentar tus apuestas:
+      </p>
+      <ul>
+        <li>Coloca las fichas de póquer debajo de tu ficha de apuesta</li>
+        <li>Si pierdes, el dinero apostado se pierde</li>
+        <li>¡Puedes apostar tanto como quieras!</li>
+      </ul>
+
+      <h2>🏆 Fin del Juego</h2>
+      <p>Al final de la 7ª ronda:</p>
+      <ul>
+        <li>El jugador con más dinero gana</li>
+        <li>En caso de empate, gana el jugador más joven</li>
+      </ul>
+
+      <div class="highlight">
+        <strong>💡 Consejo Pro:</strong> No siempre necesitas saber la respuesta
+        correcta. Observa las respuestas de otros jugadores y apuesta
+        sabiamente. ¡A veces es mejor apostar que responder!
+      </div>
+
+      <h2>📱 Controles Digitales</h2>
+
+      <h3>Como Host:</h3>
+      <ol>
+        <li>Crea una sala y comparte el código de 6 letras</li>
+        <li>Proyecta la pantalla en un TV o monitor grande</li>
+        <li>Espera a que los jugadores se unan</li>
+        <li>Inicia el juego cuando todos estén listos</li>
+        <li>Controla el flujo de las rondas</li>
+      </ol>
+
+      <h3>Como Jugador:</h3>
+      <ol>
+        <li>Únete a la sala con el código compartido</li>
+        <li>Ingresa tu nombre</li>
+        <li>Responde las preguntas desde tu móvil</li>
+        <li>Haz tus apuestas tocando los espacios</li>
+        <li>¡Observa el tablero principal para ver los resultados!</li>
+      </ol>
+
+      <div class="note">
+        <strong>🎉 ¡Diviértete!</strong> Wits & Wagers es un juego social.
+        Habla, debate las respuestas, y celebra las grandes apuestas. ¡La
+        diversión está en el riesgo y la emoción!
+      </div>
+
+      <a
+        href="/"
+        class="back-btn"
+        style="margin-top: 2rem; display: inline-block"
+        >← Volver al Inicio</a
+      >
     </div>
-
-    <h2>📋 Preparación del Juego</h2>
-    
-    <h3>Jugadores</h3>
-    <ul>
-      <li>De 2 a 7 jugadores</li>
-      <li>Cada jugador comienza con 2 Fichas de Apuesta</li>
-      <li>El juego dura 7 rondas</li>
-    </ul>
-
-    <h3>Roles</h3>
-    <ul>
-      <li><strong>Host:</strong> Controla la pantalla principal y maneja el flujo del juego</li>
-      <li><strong>Jugadores:</strong> Responden preguntas y hacen apuestas desde sus dispositivos móviles</li>
-    </ul>
-
-    <h2>🎮 Cómo Jugar</h2>
-
-    <h3>1. Responder la Pregunta</h3>
-    <p>El host lee una pregunta en voz alta. Cada jugador escribe una respuesta (estimación) desde su dispositivo móvil.</p>
-    
-    <div class="note">
-      <strong>💡 Nota:</strong> No te preocupes si no sabes la respuesta exacta. ¡Solo haz tu mejor estimación!
-    </div>
-
-    <h3>2. Ordenar las Respuestas</h3>
-    <p>Una vez que todos han respondido, las respuestas se ordenan automáticamente de menor a mayor en el tablero:</p>
-    <ul>
-      <li>La respuesta más baja siempre está en un espacio rojo</li>
-      <li>Si múltiples jugadores escriben la misma respuesta, se colocan lado a lado</li>
-    </ul>
-
-    <h3>3. Hacer Apuestas</h3>
-    <p>Tu objetivo es apostar a la <strong>respuesta ganadora</strong>. La respuesta ganadora es la que está <strong>más cerca de la respuesta correcta, sin pasarse</strong>.</p>
-
-    <p><strong>Puedes apostar en:</strong></p>
-    <ul>
-      <li>Una respuesta específica (puede ser la tuya o la de otro jugador)</li>
-      <li>El espacio "TODAS LAS RESPUESTAS SON MUY ALTAS" (6 a 1)</li>
-      <li>Los espacios "ROJO 1 a 1" o "NEGRO 1 a 1"</li>
-    </ul>
-
-    <div class="example">
-      <strong>Opciones de Apuesta:</strong><br>
-      1. Apostar <strong>ambas</strong> fichas en el mismo espacio<br>
-      2. <strong>Dividir</strong> tus fichas entre dos espacios diferentes
-    </div>
-
-    <h3>4. Determinar Ganadores</h3>
-    <p>Después de que todos apuesten, se revela la respuesta correcta:</p>
-    <ul>
-      <li><strong>Bono:</strong> El jugador con la respuesta ganadora recibe fichas de póquer según la ronda</li>
-      <li><strong>Pagos:</strong> Todos los que apostaron correctamente reciben dinero según las probabilidades</li>
-    </ul>
-
-    <h2>💰 Tabla de Pagos</h2>
-    <p>El pago se calcula multiplicando tu apuesta por las probabilidades del espacio:</p>
-
-    <table>
-      <thead>
-        <tr>
-          <th>Probabilidades</th>
-          <th>Ejemplo (apuesta de $2)</th>
-          <th>Pago Total</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr>
-          <td>6 a 1</td>
-          <td>2 + (2 × 6)</td>
-          <td>$14</td>
-        </tr>
-        <tr>
-          <td>5 a 1</td>
-          <td>2 + (2 × 5)</td>
-          <td>$12</td>
-        </tr>
-        <tr>
-          <td>4 a 1</td>
-          <td>2 + (2 × 4)</td>
-          <td>$10</td>
-        </tr>
-        <tr>
-          <td>3 a 1</td>
-          <td>2 + (2 × 3)</td>
-          <td>$8</td>
-        </tr>
-        <tr>
-          <td>2 a 1</td>
-          <td>2 + (2 × 2)</td>
-          <td>$6</td>
-        </tr>
-        <tr>
-          <td>1 a 1</td>
-          <td>2 + (2 × 1)</td>
-          <td>$4</td>
-        </tr>
-      </tbody>
-    </table>
-
-    <div class="highlight">
-      <strong>🎁 Bonos por Ronda:</strong><br>
-      El jugador que escriba la respuesta ganadora recibe un bono:<br>
-      Ronda 1: $100 | Ronda 2: $200 | Ronda 3: $300 | Ronda 4: $400<br>
-      Ronda 5: $500 | Ronda 6: $600 | Ronda 7: $700
-    </div>
-
-    <h2>🎯 Reglas Especiales</h2>
-
-    <h3>Respuestas Duplicadas</h3>
-    <p>Si múltiples jugadores escriben la misma respuesta ganadora:</p>
-    <ul>
-      <li>Todos reciben el bono completo</li>
-      <li>Al apostar, elige el espacio con mejores probabilidades</li>
-      <li>Todos los espacios con esa respuesta pagan</li>
-    </ul>
-
-    <h3>Todas las Respuestas son Muy Altas</h3>
-    <p>Si todas las respuestas son mayores que la respuesta correcta:</p>
-    <ul>
-      <li>Solo el espacio "6 a 1" (Todas muy altas) paga</li>
-      <li>Nadie recibe el bono de la ronda</li>
-    </ul>
-
-    <h3>Apostar Dinero Ganado</h3>
-    <p>Después de la primera ronda, puedes usar el dinero que has ganado para aumentar tus apuestas:</p>
-    <ul>
-      <li>Coloca las fichas de póquer debajo de tu ficha de apuesta</li>
-      <li>Si pierdes, el dinero apostado se pierde</li>
-      <li>¡Puedes apostar tanto como quieras!</li>
-    </ul>
-
-    <h2>🏆 Fin del Juego</h2>
-    <p>Al final de la 7ª ronda:</p>
-    <ul>
-      <li>El jugador con más dinero gana</li>
-      <li>En caso de empate, gana el jugador más joven</li>
-    </ul>
-
-    <div class="highlight">
-      <strong>💡 Consejo Pro:</strong> No siempre necesitas saber la respuesta correcta. Observa las respuestas de otros jugadores y apuesta sabiamente. ¡A veces es mejor apostar que responder!
-    </div>
-
-    <h2>📱 Controles Digitales</h2>
-
-    <h3>Como Host:</h3>
-    <ol>
-      <li>Crea una sala y comparte el código de 6 letras</li>
-      <li>Proyecta la pantalla en un TV o monitor grande</li>
-      <li>Espera a que los jugadores se unan</li>
-      <li>Inicia el juego cuando todos estén listos</li>
-      <li>Controla el flujo de las rondas</li>
-    </ol>
-
-    <h3>Como Jugador:</h3>
-    <ol>
-      <li>Únete a la sala con el código compartido</li>
-      <li>Ingresa tu nombre</li>
-      <li>Responde las preguntas desde tu móvil</li>
-      <li>Haz tus apuestas tocando los espacios</li>
-      <li>¡Observa el tablero principal para ver los resultados!</li>
-    </ol>
-
-    <div class="note">
-      <strong>🎉 ¡Diviértete!</strong> Wits & Wagers es un juego social. Habla, debate las respuestas, y celebra las grandes apuestas. ¡La diversión está en el riesgo y la emoción!
-    </div>
-
-    <a href="/" class="back-btn" style="margin-top: 2rem; display: inline-block;">← Volver al Inicio</a>
-  </div>
-</body>
+  </body>
 </html>

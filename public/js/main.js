@@ -338,6 +338,10 @@ function connectSocket() {
 
     state.socket.on('round:started', (data) => {
         console.log('Ronda iniciada:', data);
+        
+        // Guardar número de ronda
+        state.currentRound = data.roundNumber;
+        
         if (state.role === 'player') {
             showQuestionScreen(data);
         }
@@ -345,13 +349,27 @@ function connectSocket() {
 
     state.socket.on('round:bettingPhase', (data) => {
         console.log('Fase de apuestas:', data);
+        
+        // Actualizar tablero en pantalla del host
+        if (state.role === 'host' && typeof window.updateBoardWithAnswers === 'function') {
+            window.updateBoardWithAnswers(data.answers, data.blockers);
+        }
+        
         if (state.role === 'player') {
+            // Guardar número de ronda actual
+            state.currentRound = data.roundNumber || state.currentRound;
             showBettingScreen(data);
         }
     });
 
     state.socket.on('round:revealed', (data) => {
         console.log('Respuesta revelada:', data);
+        
+        // Resaltar respuesta ganadora en el tablero del host
+        if (state.role === 'host' && typeof window.highlightWinningAnswer === 'function') {
+            window.highlightWinningAnswer(data.winningPosition, data.allTooHigh);
+        }
+        
         showResultsScreen(data);
     });
 

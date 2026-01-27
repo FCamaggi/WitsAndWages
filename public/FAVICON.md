@@ -40,6 +40,7 @@ Los navegadores modernos soportan SVG perfectamente, así que los PNG son opcion
 ## Diseño del Favicon
 
 El favicon muestra:
+
 - 🎰 Ficha de póquer dorada (estilo Vegas)
 - 💰 Símbolo $ en el centro
 - ✨ Detalles decorativos tipo casino
@@ -51,10 +52,10 @@ Ya está configurado en `index.html`:
 
 ```html
 <!-- Favicons -->
-<link rel="icon" type="image/svg+xml" href="/favicon.svg">
-<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
-<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
-<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png" />
+<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png" />
+<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
 ```
 
 El navegador elegirá automáticamente el formato correcto según su soporte.
@@ -62,6 +63,7 @@ El navegador elegirá automáticamente el formato correcto según su soporte.
 ## Preview
 
 Puedes ver el favicon en:
+
 - La pestaña del navegador
 - Los bookmarks/favoritos
 - Los accesos directos en el escritorio (PWA)

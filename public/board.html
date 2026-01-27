@@ -1,0 +1,451 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tablero - Wits & Wagers Vegas</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Arial', sans-serif;
+            background: linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 100%);
+            color: #fff;
+            padding: 1rem;
+        }
+
+        .board-container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .board-title {
+            text-align: center;
+            font-size: 2.5rem;
+            color: #d4af37;
+            margin-bottom: 1rem;
+            text-shadow: 0 0 20px rgba(212, 175, 55, 0.5);
+        }
+
+        .board-subtitle {
+            text-align: center;
+            font-size: 1.2rem;
+            color: #999;
+            margin-bottom: 2rem;
+        }
+
+        /* Tablero de apuestas principal */
+        .betting-board {
+            background: linear-gradient(135deg, #2a2a2a 0%, #1a1a1a 100%);
+            border: 4px solid #d4af37;
+            border-radius: 20px;
+            padding: 2rem;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5);
+        }
+
+        .betting-grid {
+            display: grid;
+            grid-template-columns: repeat(8, 1fr);
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+
+        .betting-space {
+            aspect-ratio: 1;
+            background: linear-gradient(135deg, #3a3a3a 0%, #2a2a2a 100%);
+            border: 3px solid #555;
+            border-radius: 12px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 1rem;
+            position: relative;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+
+        .betting-space:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 30px rgba(212, 175, 55, 0.3);
+        }
+
+        .betting-space.red {
+            background: linear-gradient(135deg, #8B0000 0%, #DC143C 100%);
+            border-color: #DC143C;
+        }
+
+        .betting-space.green {
+            background: linear-gradient(135deg, #006400 0%, #32CD32 100%);
+            border-color: #32CD32;
+        }
+
+        .betting-space.black {
+            background: linear-gradient(135deg, #1a1a1a 0%, #333 100%);
+            border-color: #666;
+        }
+
+        .betting-space.all-high {
+            background: linear-gradient(135deg, #FFD700 0%, #FFA500 100%);
+            border-color: #FFD700;
+            color: #000;
+            font-weight: bold;
+        }
+
+        .betting-space.blocked {
+            background: repeating-linear-gradient(
+                45deg,
+                #3a3a3a,
+                #3a3a3a 10px,
+                #2a2a2a 10px,
+                #2a2a2a 20px
+            );
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .betting-space.blocked::after {
+            content: '🚫';
+            font-size: 3rem;
+            position: absolute;
+        }
+
+        .betting-space.winning {
+            animation: winningPulse 1.5s infinite;
+            border-color: #FFD700;
+            border-width: 5px;
+        }
+
+        @keyframes winningPulse {
+            0%, 100% {
+                box-shadow: 0 0 20px rgba(255, 215, 0, 0.8);
+            }
+            50% {
+                box-shadow: 0 0 40px rgba(255, 215, 0, 1);
+            }
+        }
+
+        .odds-label {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: #d4af37;
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
+        }
+
+        .answer-value {
+            font-size: 2rem;
+            font-weight: bold;
+            margin: 0.5rem 0;
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
+        }
+
+        .player-name {
+            font-size: 0.9rem;
+            color: #ccc;
+            text-align: center;
+        }
+
+        .position-label {
+            font-size: 0.8rem;
+            color: #999;
+            margin-top: 0.3rem;
+        }
+
+        /* Espacios especiales 1 to 1 */
+        .special-bets {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 2rem;
+            margin-top: 2rem;
+        }
+
+        .special-bet {
+            background: linear-gradient(135deg, #2a2a2a 0%, #1a1a1a 100%);
+            border: 3px solid #d4af37;
+            border-radius: 12px;
+            padding: 2rem;
+            text-align: center;
+            transition: all 0.3s ease;
+        }
+
+        .special-bet:hover {
+            transform: scale(1.05);
+            box-shadow: 0 10px 30px rgba(212, 175, 55, 0.3);
+        }
+
+        .special-bet.red-1to1 {
+            border-color: #DC143C;
+        }
+
+        .special-bet.black-1to1 {
+            border-color: #666;
+        }
+
+        .special-bet.winning {
+            animation: winningPulse 1.5s infinite;
+        }
+
+        .special-bet-title {
+            font-size: 1.8rem;
+            font-weight: bold;
+            margin-bottom: 0.5rem;
+        }
+
+        .special-bet-odds {
+            font-size: 1.3rem;
+            color: #d4af37;
+        }
+
+        .special-bet-description {
+            font-size: 0.9rem;
+            color: #999;
+            margin-top: 0.5rem;
+        }
+
+        /* Leyenda */
+        .legend {
+            margin-top: 2rem;
+            padding: 1.5rem;
+            background: rgba(42, 42, 42, 0.8);
+            border-radius: 12px;
+            display: flex;
+            justify-content: center;
+            gap: 2rem;
+            flex-wrap: wrap;
+        }
+
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .legend-color {
+            width: 30px;
+            height: 30px;
+            border-radius: 6px;
+            border: 2px solid #666;
+        }
+
+        .legend-color.red {
+            background: linear-gradient(135deg, #8B0000 0%, #DC143C 100%);
+        }
+
+        .legend-color.green {
+            background: linear-gradient(135deg, #006400 0%, #32CD32 100%);
+        }
+
+        .legend-color.black {
+            background: linear-gradient(135deg, #1a1a1a 0%, #333 100%);
+        }
+
+        /* Info panel */
+        .info-panel {
+            margin-top: 2rem;
+            padding: 1.5rem;
+            background: rgba(42, 42, 42, 0.8);
+            border-radius: 12px;
+            text-align: center;
+        }
+
+        .info-panel h3 {
+            color: #d4af37;
+            margin-bottom: 1rem;
+        }
+
+        .info-panel p {
+            color: #ccc;
+            line-height: 1.6;
+        }
+
+        /* Responsivo */
+        @media (max-width: 1200px) {
+            .betting-grid {
+                grid-template-columns: repeat(4, 1fr);
+            }
+        }
+
+        @media (max-width: 768px) {
+            .betting-grid {
+                grid-template-columns: repeat(2, 1fr);
+                gap: 0.5rem;
+            }
+
+            .betting-space {
+                padding: 0.5rem;
+            }
+
+            .odds-label {
+                font-size: 1rem;
+            }
+
+            .answer-value {
+                font-size: 1.3rem;
+            }
+
+            .special-bets {
+                grid-template-columns: 1fr;
+                gap: 1rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="board-container">
+        <h1 class="board-title">🎰 WITS & WAGERS VEGAS</h1>
+        <p class="board-subtitle">Tablero de Apuestas</p>
+
+        <div class="betting-board">
+            <!-- Grid principal de apuestas -->
+            <div class="betting-grid" id="betting-grid">
+                <!-- Los espacios se llenarán dinámicamente -->
+            </div>
+
+            <!-- Apuestas especiales 1 to 1 -->
+            <div class="special-bets">
+                <div class="special-bet red-1to1" id="bet-1to1-red">
+                    <div class="special-bet-title" style="color: #DC143C;">ROJO 1 a 1</div>
+                    <div class="special-bet-odds">PAGA 1 a 1</div>
+                    <div class="special-bet-description">Gana si la respuesta ganadora está en espacios ROJOS</div>
+                </div>
+
+                <div class="special-bet black-1to1" id="bet-1to1-black">
+                    <div class="special-bet-title" style="color: #ccc;">NEGRO 1 a 1</div>
+                    <div class="special-bet-odds">PAGA 1 a 1</div>
+                    <div class="special-bet-description">Gana si la respuesta ganadora está en espacios NEGROS</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Leyenda -->
+        <div class="legend">
+            <div class="legend-item">
+                <div class="legend-color red"></div>
+                <span>Espacios Rojos</span>
+            </div>
+            <div class="legend-item">
+                <div class="legend-color green"></div>
+                <span>Espacio Verde (Neutral)</span>
+            </div>
+            <div class="legend-item">
+                <div class="legend-color black"></div>
+                <span>Espacios Negros</span>
+            </div>
+        </div>
+
+        <!-- Info panel -->
+        <div class="info-panel">
+            <h3>📋 Cómo Funciona</h3>
+            <p>
+                Coloca tus fichas de apuesta en las respuestas que crees que estarán más cerca de la correcta SIN PASARSE.
+                <br>
+                Puedes usar hasta 2 fichas de apuesta por ronda.
+                <br>
+                Después de la Ronda 1, puedes agregar fichas de póquer para aumentar tus ganancias (¡pero también el riesgo!).
+            </p>
+        </div>
+    </div>
+
+    <script>
+        // Script para inicializar el tablero
+        function initializeBoard() {
+            const grid = document.getElementById('betting-grid');
+            
+            // Estructura del tablero
+            const positions = [
+                { id: '6to1-all-high', odds: '6 a 1', label: 'TODAS MUY ALTAS', color: 'all-high' },
+                { id: '5to1-red', odds: '5 a 1', label: '', color: 'red' },
+                { id: '4to1-red', odds: '4 a 1', label: '', color: 'red' },
+                { id: '3to1-red', odds: '3 a 1', label: '', color: 'red' },
+                { id: '2to1-green', odds: '2 a 1', label: '', color: 'green' },
+                { id: '3to1-black', odds: '3 a 1', label: '', color: 'black' },
+                { id: '4to1-black', odds: '4 a 1', label: '', color: 'black' },
+                { id: '5to1-black', odds: '5 a 1', label: '', color: 'black' }
+            ];
+
+            positions.forEach(pos => {
+                const space = document.createElement('div');
+                space.className = `betting-space ${pos.color}`;
+                space.id = pos.id;
+                space.dataset.position = pos.id;
+                
+                space.innerHTML = `
+                    <div class="odds-label">${pos.odds}</div>
+                    ${pos.label ? `<div class="position-label">${pos.label}</div>` : ''}
+                `;
+                
+                grid.appendChild(space);
+            });
+        }
+
+        // Función para actualizar respuestas en el tablero
+        function updateBoardWithAnswers(answers, blockers = []) {
+            // Limpiar respuestas anteriores
+            document.querySelectorAll('.answer-value, .player-name').forEach(el => el.remove());
+            document.querySelectorAll('.betting-space').forEach(el => {
+                el.classList.remove('blocked', 'winning');
+            });
+
+            // Aplicar bloqueadores
+            blockers.forEach(blocker => {
+                const space = document.getElementById(blocker.position);
+                if (space) {
+                    space.classList.add('blocked');
+                }
+            });
+
+            // Colocar respuestas en sus posiciones
+            answers.forEach(answer => {
+                const space = document.getElementById(answer.position);
+                if (space && !space.classList.contains('blocked')) {
+                    const valueDiv = document.createElement('div');
+                    valueDiv.className = 'answer-value';
+                    valueDiv.textContent = answer.value;
+                    
+                    const playerDiv = document.createElement('div');
+                    playerDiv.className = 'player-name';
+                    playerDiv.textContent = answer.playerName;
+                    
+                    space.appendChild(valueDiv);
+                    space.appendChild(playerDiv);
+                }
+            });
+        }
+
+        // Función para resaltar respuesta ganadora
+        function highlightWinningAnswer(winningPosition, allTooHigh = false) {
+            document.querySelectorAll('.betting-space, .special-bet').forEach(el => {
+                el.classList.remove('winning');
+            });
+
+            if (allTooHigh) {
+                document.getElementById('6to1-all-high')?.classList.add('winning');
+            } else if (winningPosition) {
+                // Resaltar espacio ganador
+                const winningSpace = document.getElementById(winningPosition);
+                if (winningSpace) {
+                    winningSpace.classList.add('winning');
+                    
+                    // Resaltar también apuestas 1 to 1 si aplica
+                    if (winningPosition.includes('red')) {
+                        document.getElementById('bet-1to1-red')?.classList.add('winning');
+                    } else if (winningPosition.includes('black')) {
+                        document.getElementById('bet-1to1-black')?.classList.add('winning');
+                    }
+                }
+            }
+        }
+
+        // Exponer funciones globalmente para que el host pueda usarlas
+        window.updateBoardWithAnswers = updateBoardWithAnswers;
+        window.highlightWinningAnswer = highlightWinningAnswer;
+
+        // Inicializar tablero al cargar
+        initializeBoard();
+    </script>
+</body>
+</html>
