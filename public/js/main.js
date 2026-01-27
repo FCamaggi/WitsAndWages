@@ -74,12 +74,12 @@ function showHomeScreen() {
         <form id="form-create-room">
           <div class="form-group">
             <label>Configurar Categorías</label>
-            <p style="color: #999; font-size: 0.9rem; margin-bottom: 1rem;">
-              Selecciona las categorías que NO quieres incluir en el juego
+            <p style="color: #999; font-size: 0.85rem; margin-bottom: 0.75rem;">
+              Marca las categorías que quieres <strong>excluir</strong>
             </p>
             <div id="categories-list"></div>
           </div>
-          <button type="submit" class="btn btn-primary" style="width: 100%;">
+          <button type="submit" class="btn btn-primary" style="width: 100%; margin-top: 1rem;">
             Crear Sala
           </button>
           <div class="error-message" id="create-room-error"></div>
@@ -189,17 +189,21 @@ function renderCategories(categories) {
         return;
     }
 
-    categoriesList.innerHTML = filteredCategories.map(cat => `
-    <label style="display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.8rem; cursor: pointer;">
-      <input 
-        type="checkbox" 
-        name="excluded-category" 
-        value="${cat.id}"
-        style="width: auto;"
-      />
-      <span>${cat.nombre} (${cat.totalPreguntas} preguntas)</span>
-    </label>
-  `).join('');
+    categoriesList.innerHTML = `
+    <div style="max-height: 300px; overflow-y: auto; padding-right: 0.5rem;">
+      ${filteredCategories.map(cat => `
+        <label style="display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.5rem; cursor: pointer; font-size: 0.9rem;">
+          <input 
+            type="checkbox" 
+            name="excluded-category" 
+            value="${cat.id}"
+            style="width: auto; margin: 0; flex-shrink: 0;"
+          />
+          <span style="line-height: 1.3;">${cat.nombre} <span style="color: #999; font-size: 0.85rem;">(${cat.totalPreguntas})</span></span>
+        </label>
+      `).join('')}
+    </div>
+  `;
 }
 
 // Handlers

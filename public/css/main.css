@@ -140,6 +140,8 @@ body {
   padding: 2rem;
   max-width: 500px;
   width: 90%;
+  max-height: 85vh;
+  overflow-y: auto;
   box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
   animation: slideUp 0.3s ease;
 }
@@ -361,4 +363,42 @@ body {
 }
 .mb-2 {
   margin-bottom: 2rem;
+}
+
+/* Scrollbar personalizado para lista de categorías */
+#categories-list > div {
+  scrollbar-width: thin;
+  scrollbar-color: var(--primary-color) #2d2d2d;
+}
+
+#categories-list > div::-webkit-scrollbar {
+  width: 8px;
+}
+
+#categories-list > div::-webkit-scrollbar-track {
+  background: #2d2d2d;
+  border-radius: 4px;
+}
+
+#categories-list > div::-webkit-scrollbar-thumb {
+  background: var(--primary-color);
+  border-radius: 4px;
+}
+
+#categories-list > div::-webkit-scrollbar-thumb:hover {
+  background: #b8941f;
+}
+
+/* Mejorar checkboxes */
+#categories-list input[type="checkbox"] {
+  cursor: pointer;
+  accent-color: var(--primary-color);
+}
+
+#categories-list label:hover {
+  background: rgba(212, 175, 55, 0.1);
+  border-radius: 4px;
+  padding: 0.25rem 0.5rem;
+  margin-left: -0.5rem;
+  margin-right: -0.5rem;
 }
