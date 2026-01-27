@@ -174,10 +174,20 @@ async function loadCategories() {
 function renderCategories(categories) {
     const categoriesList = document.getElementById('categories-list');
 
-    // Filtrar categorías que no son "Tarjeta X"
+    if (!categories || categories.length === 0) {
+        categoriesList.innerHTML = '<p style="color: #999;">No hay categorías disponibles</p>';
+        return;
+    }
+
+    // Filtrar categorías que no son "Tarjeta X" y que tienen id válido
     const filteredCategories = categories.filter(cat =>
-        !cat.id.startsWith('tarjeta_')
+        cat && cat.id && cat.nombre && !cat.id.startsWith('tarjeta_')
     );
+
+    if (filteredCategories.length === 0) {
+        categoriesList.innerHTML = '<p style="color: #999;">No hay categorías para seleccionar</p>';
+        return;
+    }
 
     categoriesList.innerHTML = filteredCategories.map(cat => `
     <label style="display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.8rem; cursor: pointer;">

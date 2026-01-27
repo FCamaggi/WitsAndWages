@@ -16,12 +16,14 @@ function loadQuestions() {
 // Obtener categorías disponibles
 function getCategories() {
     const data = loadQuestions();
-    return data.categorias.map(cat => ({
-        id: cat.id,
-        nombre: cat.nombre,
-        descripcion: cat.descripcion,
-        totalPreguntas: cat.preguntas.length
-    }));
+    return data.categorias
+        .filter(cat => cat && cat.id && cat.nombre) // Filtrar categorías inválidas
+        .map(cat => ({
+            id: cat.id,
+            nombre: cat.nombre,
+            descripcion: cat.descripcion || '',
+            totalPreguntas: cat.preguntas ? cat.preguntas.length : 0
+        }));
 }
 
 // Obtener pregunta aleatoria excluyendo categorías
