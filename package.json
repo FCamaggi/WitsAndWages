@@ -1,0 +1,34 @@
+{
+  "name": "wits-and-wagers-vegas",
+  "version": "1.0.0",
+  "description": "Juego digital Wits & Wagers Vegas con multijugador en tiempo real",
+  "main": "server/index.js",
+  "scripts": {
+    "dev:server": "nodemon server/index.js",
+    "dev:client": "vite",
+    "dev": "concurrently \"npm run dev:server\" \"npm run dev:client\"",
+    "build": "vite build",
+    "start": "node server/index.js",
+    "preview": "vite preview"
+  },
+  "keywords": [
+    "wits-and-wagers",
+    "juego",
+    "multijugador",
+    "vegas"
+  ],
+  "author": "",
+  "license": "MIT",
+  "dependencies": {
+    "cors": "^2.8.5",
+    "dotenv": "^16.3.1",
+    "express": "^4.18.2",
+    "mongoose": "^8.0.3",
+    "socket.io": "^4.6.1"
+  },
+  "devDependencies": {
+    "concurrently": "^8.2.2",
+    "nodemon": "^3.0.2",
+    "vite": "^7.3.1"
+  }
+}
