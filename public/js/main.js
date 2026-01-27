@@ -179,10 +179,25 @@ function renderCategories(categories) {
         return;
     }
 
-    // Filtrar categorías que no son "Tarjeta X" y que tienen id válido
-    const filteredCategories = categories.filter(cat =>
-        cat && cat.id && cat.nombre && !cat.id.startsWith('tarjeta_')
-    );
+    // Filtrar categorías que no son "Tarjeta X", "conjunto", etc. y que tienen id válido
+    const filteredCategories = categories.filter(cat => {
+        if (!cat || !cat.id || !cat.nombre) return false;
+        const nombre = cat.nombre.toLowerCase();
+        const id = cat.id.toLowerCase();
+        
+        // Excluir tarjetas, conjuntos, y otras categorías no deseadas
+        const excludePatterns = [
+            'tarjeta',
+            'conjunto',
+            'corregido',
+            'verificado',
+            'expandido'
+        ];
+        
+        return !excludePatterns.some(pattern => 
+            nombre.includes(pattern) || id.includes(pattern)
+        );
+    });
 
     if (filteredCategories.length === 0) {
         categoriesList.innerHTML = '<p style="color: #999;">No hay categorías para seleccionar</p>';
@@ -190,7 +205,7 @@ function renderCategories(categories) {
     }
 
     categoriesList.innerHTML = `
-    <div style="max-height: 300px; overflow-y: auto; padding-right: 0.5rem;">
+    <div style="max-height: 400px; overflow-y: auto; padding-right: 0.5rem;">
       ${filteredCategories.map(cat => `
         <label style="display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.5rem; cursor: pointer; font-size: 0.9rem;">
           <input 
