@@ -1,8 +1,8 @@
 // Pantalla del Jugador (Mobile)
 
 function showPlayerScreen() {
-    const app = document.getElementById('app');
-    app.innerHTML = `
+  const app = document.getElementById('app');
+  app.innerHTML = `
     <div class="player-screen">
       <!-- Header -->
       <div class="player-header">
@@ -83,370 +83,563 @@ function showPlayerScreen() {
     </div>
   `;
 
-    setupPlayerEventListeners();
+  setupPlayerEventListeners();
+
+  // Inicializar helper de orientación
+  if (window.OrientationHelper) {
+    OrientationHelper.init();
+  }
 }
 
 function setupPlayerEventListeners() {
-    const submitAnswerBtn = document.getElementById('btn-submit-answer');
-    if (submitAnswerBtn) {
-        submitAnswerBtn.addEventListener('click', submitAnswer);
-    }
+  const submitAnswerBtn = document.getElementById('btn-submit-answer');
+  if (submitAnswerBtn) {
+    submitAnswerBtn.addEventListener('click', submitAnswer);
+  }
 
-    const submitBetsBtn = document.getElementById('btn-submit-bets');
-    if (submitBetsBtn) {
-        submitBetsBtn.addEventListener('click', submitBets);
-    }
+  const submitBetsBtn = document.getElementById('btn-submit-bets');
+  if (submitBetsBtn) {
+    submitBetsBtn.addEventListener('click', submitBets);
+  }
 }
 
 function showQuestionScreen(data) {
-    // Ocultar otras secciones
-    hideAllPlayerSections();
+  // Ocultar otras secciones
+  hideAllPlayerSections();
 
-    const questionScreen = document.getElementById('question-screen');
-    questionScreen.classList.remove('hidden');
+  const questionScreen = document.getElementById('question-screen');
+  questionScreen.classList.remove('hidden');
 
-    // Actualizar contenido
-    document.getElementById('round-number').textContent = data.roundNumber;
-    document.getElementById('question-text').textContent = data.question.pregunta;
-    document.getElementById('question-category').textContent = `📂 ${data.question.categoria}`;
-    document.getElementById('answer-unit').textContent = data.question.unidad || '';
+  // Desactivar ayuda de orientación durante preguntas
+  if (window.OrientationHelper) {
+    OrientationHelper.disable();
+  }
 
-    // Limpiar input
-    document.getElementById('player-answer').value = '';
-    document.getElementById('btn-submit-answer').disabled = false;
+  // Actualizar contenido
+  document.getElementById('round-number').textContent = data.roundNumber;
+  document.getElementById('question-text').textContent = data.question.pregunta;
+  document.getElementById('question-category').textContent = `📂 ${data.question.categoria}`;
+  document.getElementById('answer-unit').textContent = data.question.unidad || '';
+
+  // Limpiar input
+  document.getElementById('player-answer').value = '';
+  document.getElementById('btn-submit-answer').disabled = false;
 }
 
 function submitAnswer() {
-    const answerInput = document.getElementById('player-answer');
-    const answer = parseFloat(answerInput.value);
+  const answerInput = document.getElementById('player-answer');
+  const answer = parseFloat(answerInput.value);
 
-    if (isNaN(answer)) {
-        alert('Por favor ingresa un número válido');
-        return;
+  if (isNaN(answer)) {
+    NotificationSystem.error('Por favor ingresa un número válido');
+    return;
+  }
+
+  state.socket.emit('player:submitAnswer', {
+    code: state.roomCode,
+    playerId: state.playerId,
+    answer
+  }, (response) => {
+    if (!response.success) {
+      NotificationSystem.error('Error: ' + response.error);
+      return;
     }
 
-    state.socket.emit('player:submitAnswer', {
-        code: state.roomCode,
-        playerId: state.playerId,
-        answer
-    }, (response) => {
-        if (!response.success) {
-            alert('Error: ' + response.error);
-            return;
-        }
+    // Deshabilitar botón
+    document.getElementById('btn-submit-answer').disabled = true;
+    document.getElementById('btn-submit-answer').textContent = '✓ Respuesta Enviada';
 
-        // Deshabilitar botón
-        document.getElementById('btn-submit-answer').disabled = true;
-        document.getElementById('btn-submit-answer').textContent = '✓ Respuesta Enviada';
-
-        // Mostrar pantalla de espera
-        showWaitingScreen('Esperando a los demás jugadores...');
-    });
+    // Mostrar pantalla de espera
+    showWaitingScreen('Esperando a los demás jugadores...');
+  });
 }
 
 function showBettingScreen(data) {
-    hideAllPlayerSections();
+  hideAllPlayerSections();
 
-    const bettingScreen = document.getElementById('betting-screen');
-    bettingScreen.classList.remove('hidden');
+  const bettingScreen = document.getElementById('betting-screen');
+  bettingScreen.classList.remove('hidden');
 
-    // Obtener dinero actual del jugador
-    const currentMoney = parseInt(document.getElementById('player-money').textContent) || 0;
-    const isFirstRound = state.currentRound === 1;
+  // Guardar datos para uso posterior
+  state.lastBettingData = data;
 
-    // Renderizar respuestas disponibles
-    const answersDisplay = document.getElementById('answers-display');
-    answersDisplay.innerHTML = `
-    <div class="money-info" style="background: var(--card-bg); padding: 1rem; border-radius: 8px; margin-bottom: 1rem;">
-      <div style="display: flex; justify-content: space-between; align-items: center;">
-        <span>💰 Dinero disponible:</span>
-        <span style="font-size: 1.3rem; font-weight: bold; color: var(--success-color);">$${currentMoney}</span>
+  // Activar ayuda de orientación para la fase de apuestas (donde el tablero es importante)
+  if (window.OrientationHelper) {
+    OrientationHelper.enable();
+  }
+
+  // Obtener dinero actual del jugador
+  const currentMoney = parseInt(document.getElementById('player-money').textContent) || 0;
+  const isFirstRound = state.currentRound === 1;
+
+  console.log('Datos recibidos para apuestas:', data);
+
+  // Renderizar tablero interactivo de apuestas
+  const answersDisplay = document.getElementById('answers-display');
+  answersDisplay.innerHTML = `
+    <div class="player-betting-header">
+      <div class="money-info">
+        <div class="money-label">💰 Dinero disponible</div>
+        <div class="money-amount">$${currentMoney}</div>
       </div>
-      ${!isFirstRound && currentMoney > 0 ? `
-        <div style="margin-top: 0.5rem; color: #999; font-size: 0.9rem;">
-          ⚠️ Puedes agregar fichas de póquer para aumentar tu apuesta (con riesgo de perderlas)
-        </div>
-      ` : ''}
+      <div class="tokens-info">
+        <div class="tokens-label">🎰 Fichas de apuesta</div>
+        <div class="tokens-remaining" id="tokens-remaining">2 / 2</div>
+      </div>
     </div>
-    <div class="answers-list">
-      ${data.answers.map(answer => `
-        <div class="answer-option" data-position="${answer.position}">
-          <div class="answer-info">
-            <div class="answer-value">${answer.value}</div>
-            <div class="answer-player">${answer.playerName}</div>
-            <div class="answer-odds">${getOddsText(answer.position)}</div>
-          </div>
-          <button class="btn-bet-token" data-position="${answer.position}">
-            Apostar
-          </button>
-        </div>
-      `).join('')}
-      
-      <!-- Opción "Todas muy altas" -->
-      <div class="answer-option" data-position="6to1-all-high">
-        <div class="answer-info">
-          <div class="answer-value">Todas muy altas</div>
-          <div class="answer-odds">6 a 1</div>
-        </div>
-        <button class="btn-bet-token" data-position="6to1-all-high">
-          Apostar
-        </button>
-      </div>
 
-      <!-- Opciones RED/BLACK 1 to 1 -->
-      <div class="answer-option" data-position="1to1-red">
-        <div class="answer-info">
-          <div class="answer-value">Rojo 1 a 1</div>
-          <div class="answer-odds">Paga si gana ROJO</div>
-        </div>
-        <button class="btn-bet-token" data-position="1to1-red">
-          Apostar
-        </button>
+    ${!isFirstRound && currentMoney > 0 ? `
+      <div class="betting-tip">
+        <span class="tip-icon">💡</span>
+        <span>Puedes agregar fichas de póquer para aumentar tus ganancias (con riesgo de perderlas)</span>
       </div>
+    ` : ''}
 
-      <div class="answer-option" data-position="1to1-black">
-        <div class="answer-info">
-          <div class="answer-value">Negro 1 a 1</div>
-          <div class="answer-odds">Paga si gana NEGRO</div>
+    <div class="player-betting-board">
+      <div class="mini-board-grid" id="mini-board-grid"></div>
+      <div class="mini-board-special">
+        <div class="mini-special-bet red-special" data-position="1to1-red">
+          <div class="mini-special-title">ROJO 1 a 1</div>
+          <div class="mini-special-desc">Gana ROJO</div>
+          <div class="mini-bet-indicator" id="indicator-1to1-red"></div>
         </div>
-        <button class="btn-bet-token" data-position="1to1-black">
-          Apostar
-        </button>
+        <div class="mini-special-bet black-special" data-position="1to1-black">
+          <div class="mini-special-title">NEGRO 1 a 1</div>
+          <div class="mini-special-desc">Gana NEGRO</div>
+          <div class="mini-bet-indicator" id="indicator-1to1-black"></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="current-bets-display" id="current-bets-display">
+      <div class="current-bets-title">Tus apuestas:</div>
+      <div class="current-bets-list" id="current-bets-list">
+        <div class="no-bets">Sin apuestas aún</div>
       </div>
     </div>
   `;
 
-    // Event listeners para botones de apuesta
-    document.querySelectorAll('.btn-bet-token').forEach(btn => {
-        btn.addEventListener('click', (e) => {
-            showBetModal(e.target.dataset.position);
-        });
-    });
+  // Guardar data globalmente
+  currentBettingData = data;
 
-    // Resetear apuestas actuales
-    state.currentBets = [];
-    updateTokensDisplay();
+  // Renderizar tablero miniatura con respuestas
+  renderMiniBettingBoard(data);
+
+  // Event listeners para las casillas del tablero
+  document.querySelectorAll('.mini-bet-space, .mini-special-bet').forEach(space => {
+    space.addEventListener('click', (e) => {
+      const position = e.currentTarget.dataset.position;
+      if (position) {
+        showBetModal(position);
+      }
+    });
+  });
+
+  // Resetear apuestas actuales
+  currentBets = [];
+  updateBetsVisualDisplay();
+}
+
+function renderMiniBettingBoard(data) {
+  const grid = document.getElementById('mini-board-grid');
+  if (!grid) return;
+
+  console.log('🎨 Renderizando mini tablero del jugador...');
+  console.log('📦 Data recibida:', data);
+  console.log('📋 Answers:', data.answers);
+  console.log('🚫 Blockers:', data.blockers);
+
+  // Posiciones del tablero
+  const positions = [
+    { id: '6to1-all-high', odds: '6:1', label: 'TODAS ALTAS', color: 'all-high' },
+    { id: '5to1-red', odds: '5:1', label: '', color: 'red' },
+    { id: '4to1-red', odds: '4:1', label: '', color: 'red' },
+    { id: '3to1-red', odds: '3:1', label: '', color: 'red' },
+    { id: '2to1-green', odds: '2:1', label: '', color: 'green' },
+    { id: '3to1-black', odds: '3:1', label: '', color: 'black' },
+    { id: '4to1-black', odds: '4:1', label: '', color: 'black' },
+    { id: '5to1-black', odds: '5:1', label: '', color: 'black' }
+  ];
+
+  const answersMap = {};
+  if (data.answers) {
+    console.log('Respuestas recibidas:', data.answers);
+    data.answers.forEach(answer => {
+      if (answer && answer.position && answer.value !== null && answer.value !== undefined) {
+        answersMap[answer.position] = answer;
+      }
+    });
+  }
+
+  console.log('Mapa de respuestas:', answersMap);
+  console.log('Bloqueadores:', data.blockers);
+
+  grid.innerHTML = positions.map(pos => {
+    const answer = answersMap[pos.id];
+    const isBlocked = data.blockers && data.blockers.some(b => b.position === pos.id);
+
+    return `
+      <div class="mini-bet-space ${pos.color} ${isBlocked ? 'blocked' : ''}" 
+           data-position="${pos.id}"
+           ${isBlocked ? '' : 'style="cursor: pointer;"'}>
+        <div class="mini-odds">${pos.odds}</div>
+        ${pos.label ? `<div class="mini-label">${pos.label}</div>` : ''}
+        ${answer && answer.value !== undefined ? `
+          <div class="mini-answer-value">${answer.value}</div>
+          <div class="mini-answer-player">${answer.playerName || ''}</div>
+        ` : ''}
+        <div class="mini-bet-indicator" id="indicator-${pos.id}"></div>
+        ${isBlocked ? '<div class="blocked-icon">🚫</div>' : ''}
+      </div>
+    `;
+  }).join('');
 }
 
 let currentBets = [];
 
-function showBetModal(position) {
-    if (currentBets.length >= 2) {
-        alert('Solo puedes hacer 2 apuestas por ronda');
-        return;
+function showBetModal(position, data) {
+  if (currentBets.length >= 2) {
+    NotificationSystem.warning('Solo puedes hacer 2 apuestas por ronda');
+    return;
+  }
+
+  // Validar que la posición tenga respuesta (excepto espacios especiales)
+  const isSpecialSpace = position === '6to1-all-high' || position === '1to1-red' || position === '1to1-black';
+
+  console.log('🔍 Es espacio especial?', isSpecialSpace);
+
+  if (!isSpecialSpace) {
+    const hasAnswer = data.answers && data.answers.some(a =>
+      a && a.position === position && a.value !== null && a.value !== undefined
+    );
+
+    console.log('✅ Tiene respuesta en posición ' + position + '?', hasAnswer);
+    console.log('📝 Respuestas filtradas para posición:', data.answers.filter(a => a.position === position));
+
+    if (!hasAnswer) {
+      NotificationSystem.warning('No puedes apostar en una casilla sin respuesta');
+      return;
     }
+  }
 
-    const currentMoney = parseInt(document.getElementById('player-money').textContent) || 0;
-    const isFirstRound = state.currentRound === 1;
+  // Nota: Según el manual, SÍ se pueden poner las 2 fichas en la misma posición
 
-    // Crear modal para agregar fichas de póquer
-    const modal = document.createElement('div');
-    modal.className = 'bet-modal';
-    modal.innerHTML = `
-        <div class="bet-modal-content">
-            <h3>Realizar Apuesta</h3>
-            <p>Posición: <strong>${getPositionName(position)}</strong></p>
-            <p>Probabilidades: <strong>${getOddsText(position)}</strong></p>
-            
-            <div class="bet-form">
-                <div class="bet-token-info">
-                    <label>✓ 1 Ficha de Apuesta (obligatoria)</label>
-                </div>
-                
-                ${!isFirstRound && currentMoney > 0 ? `
-                    <div class="poker-chips-input">
-                        <label for="poker-chips">Fichas de Póquer adicionales (opcional):</label>
-                        <input 
-                            type="number" 
-                            id="poker-chips" 
-                            min="0" 
-                            max="${currentMoney}" 
-                            value="0"
-                            placeholder="0"
-                        />
-                        <small>Disponible: $${currentMoney}</small>
-                        <small style="color: var(--danger-color);">⚠️ Si pierdes, estas fichas se perderán</small>
-                    </div>
-                ` : `
-                    <div class="first-round-info">
-                        <small>En la primera ronda solo puedes apostar tus fichas de apuesta.</small>
-                        <small>Desde la ronda 2 podrás agregar fichas de póquer.</small>
-                    </div>
-                `}
-                
-                <div class="bet-modal-buttons">
-                    <button class="btn btn-secondary" onclick="closeBetModal()">Cancelar</button>
-                    <button class="btn btn-primary" onclick="confirmBet('${position}')">Confirmar</button>
-                </div>
-            </div>
+  const currentMoney = parseInt(document.getElementById('player-money').textContent) || 0;
+  const isFirstRound = state.currentRound === 1;
+
+  // Obtener info de la posición
+  const positionInfo = getPositionInfo(position, data);
+
+  // Crear modal para agregar fichas de póquer
+  const modal = document.createElement('div');
+  modal.className = 'bet-modal';
+  modal.innerHTML = `
+    <div class="bet-modal-content">
+      <h3>Realizar Apuesta</h3>
+      <div class="bet-position-info">
+        <div class="bet-position-name">${positionInfo.name}</div>
+        ${positionInfo.value ? `<div class="bet-position-value">Respuesta: ${positionInfo.value}</div>` : ''}
+        ${positionInfo.player ? `<div class="bet-position-player">Jugador: ${positionInfo.player}</div>` : ''}
+        <div class="bet-position-odds">Paga ${positionInfo.odds}</div>
+      </div>
+      
+      <div class="bet-form">
+        <div class="bet-token-info">
+          <label>✓ 1 Ficha de Apuesta (obligatoria)</label>
         </div>
-    `;
-    
-    document.body.appendChild(modal);
+        
+        ${!isFirstRound && currentMoney > 0 ? `
+          <div class="poker-chips-input">
+            <label for="poker-chips">Fichas de Póquer adicionales (opcional):</label>
+            <input 
+              type="number" 
+              id="poker-chips" 
+              min="0" 
+              max="${currentMoney}" 
+              value="0"
+              placeholder="0"
+            />
+            <small>Disponible: $${currentMoney}</small>
+            <small class="warning-text">⚠️ Si pierdes, estas fichas se perderán</small>
+          </div>
+        ` : `
+          <div class="first-round-info">
+            <small>En la primera ronda solo puedes apostar tus fichas de apuesta.</small>
+            <small>Desde la ronda 2 podrás agregar fichas de póquer.</small>
+          </div>
+        `}
+        
+        <div class="bet-modal-buttons">
+          <button class="btn btn-secondary btn-modal" onclick="closeBetModal()">Cancelar</button>
+          <button class="btn btn-primary btn-modal" onclick="confirmBet('${position}')">Confirmar</button>
+        </div>
+      </div>
+    </div>
+  `;
+
+  document.body.appendChild(modal);
+}
+
+function getPositionInfo(position, data) {
+  const oddsMap = {
+    '6to1-all-high': { name: 'Todas muy altas', odds: '6 a 1' },
+    '5to1-red': { name: 'Casilla Roja', odds: '5 a 1' },
+    '4to1-red': { name: 'Casilla Roja', odds: '4 a 1' },
+    '3to1-red': { name: 'Casilla Roja', odds: '3 a 1' },
+    '2to1-green': { name: 'Casilla Verde', odds: '2 a 1' },
+    '3to1-black': { name: 'Casilla Negra', odds: '3 a 1' },
+    '4to1-black': { name: 'Casilla Negra', odds: '4 a 1' },
+    '5to1-black': { name: 'Casilla Negra', odds: '5 a 1' },
+    '1to1-red': { name: 'Rojo 1 a 1', odds: '1 a 1 (gana ROJO)' },
+    '1to1-black': { name: 'Negro 1 a 1', odds: '1 a 1 (gana NEGRO)' }
+  };
+
+  const info = oddsMap[position] || { name: 'Posición desconocida', odds: '?' };
+
+  // Buscar respuesta en esta posición
+  if (data && data.answers) {
+    const answer = data.answers.find(a => a.position === position);
+    if (answer) {
+      info.value = answer.value;
+      info.player = answer.playerName;
+    }
+  }
+
+  return info;
 }
 
 function closeBetModal() {
-    const modal = document.querySelector('.bet-modal');
-    if (modal) modal.remove();
+  const modal = document.querySelector('.bet-modal');
+  if (modal) modal.remove();
 }
 
 function confirmBet(position) {
-    const pokerChipsInput = document.getElementById('poker-chips');
-    const pokerChips = pokerChipsInput ? parseInt(pokerChipsInput.value) || 0 : 0;
-    const currentMoney = parseInt(document.getElementById('player-money').textContent) || 0;
-    
-    if (pokerChips > currentMoney) {
-        alert('No tienes suficiente dinero');
-        return;
+  const pokerChipsInput = document.getElementById('poker-chips');
+  const pokerChips = pokerChipsInput ? parseInt(pokerChipsInput.value) || 0 : 0;
+  const currentMoney = parseInt(document.getElementById('player-money').textContent) || 0;
+
+  if (pokerChips > currentMoney) {
+    NotificationSystem.error('No tienes suficiente dinero');
+    return;
+  }
+
+  currentBets.push({
+    position,
+    amount: 1,
+    pokerChips
+  });
+
+  closeBetModal();
+  updateBetsVisualDisplay();
+  NotificationSystem.success('Apuesta realizada');
+}
+
+function updateBetsVisualDisplay() {
+  // Actualizar contador de fichas
+  const tokensRemaining = document.getElementById('tokens-remaining');
+  if (tokensRemaining) {
+    tokensRemaining.textContent = `${2 - currentBets.length} / 2`;
+  }
+
+  // Actualizar indicadores en el tablero
+  document.querySelectorAll('.mini-bet-indicator').forEach(indicator => {
+    indicator.innerHTML = '';
+    indicator.classList.remove('has-bet');
+  });
+
+  currentBets.forEach((bet, betIndex) => {
+    const indicator = document.getElementById(`indicator-${bet.position}`);
+    if (indicator) {
+      indicator.classList.add('has-bet');
+
+      // Crear ficha visual realista
+      const chipDiv = document.createElement('div');
+      chipDiv.className = 'visual-chip';
+      chipDiv.style.cssText = `
+        width: 30px;
+        height: 30px;
+        border-radius: 50%;
+        background: radial-gradient(circle at 30% 30%, #ffd700, #d4af37, #b8941f);
+        border: 3px solid #fff;
+        box-shadow: 
+          0 2px 4px rgba(0, 0, 0, 0.6),
+          inset 0 2px 3px rgba(255, 255, 255, 0.4),
+          inset 0 -2px 3px rgba(0, 0, 0, 0.4);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: 900;
+        font-size: 0.75rem;
+        color: #000;
+        text-shadow: 0 1px 1px rgba(255, 255, 255, 0.5);
+        position: relative;
+        margin: 2px;
+      `;
+
+      // Círculo interior punteado
+      const innerCircle = document.createElement('div');
+      innerCircle.style.cssText = `
+        position: absolute;
+        top: 3px;
+        left: 3px;
+        right: 3px;
+        bottom: 3px;
+        border: 2px dashed rgba(255, 255, 255, 0.7);
+        border-radius: 50%;
+      `;
+      chipDiv.appendChild(innerCircle);
+
+      // Valor de la ficha
+      const value = document.createElement('span');
+      value.textContent = bet.pokerChips > 0 ? `$${bet.pokerChips}` : '1';
+      value.style.cssText = 'position: relative; z-index: 1;';
+      chipDiv.appendChild(value);
+
+      indicator.appendChild(chipDiv);
     }
-    
-    currentBets.push({
-        position,
-        amount: 1,
-        pokerChips
-    });
-    
-    closeBetModal();
-    updateTokensDisplay();
-    updateBetsDisplay();
-}
+  });
 
-function getPositionName(position) {
-    const names = {
-        '6to1-all-high': 'Todas muy altas',
-        '1to1-red': 'Rojo 1 a 1',
-        '1to1-black': 'Negro 1 a 1'
-    };
-    return names[position] || `Respuesta ${position}`;
-}
+  // Actualizar lista de apuestas actuales
+  const betsList = document.getElementById('current-bets-list');
+  if (betsList) {
+    if (currentBets.length === 0) {
+      betsList.innerHTML = '<div class="no-bets">Sin apuestas aún</div>';
+    } else {
+      betsList.innerHTML = currentBets.map((bet, index) => {
+        const posInfo = getPositionInfo(bet.position, state.lastBettingData);
+        return `
+          <div class="current-bet-item">
+            <div class="current-bet-info">
+              <div class="current-bet-name">${posInfo.name}</div>
+              <div class="current-bet-details">
+                1 ficha${bet.pokerChips > 0 ? ` + $${bet.pokerChips}` : ''} 
+                <span class="bet-odds">(${posInfo.odds})</span>
+              </div>
+            </div>
+            <button class="btn-remove-bet" onclick="removeBet(${index})">✕</button>
+          </div>
+        `;
+      }).join('');
+    }
+  }
 
-function updateTokensDisplay() {
-    document.getElementById('tokens-count').textContent = 2 - currentBets.length;
-
-    const submitBtn = document.getElementById('btn-submit-bets');
+  // Actualizar botón de confirmar
+  const submitBtn = document.getElementById('btn-submit-bets');
+  if (submitBtn) {
     submitBtn.disabled = currentBets.length === 0;
+    if (currentBets.length > 0) {
+      submitBtn.textContent = `Confirmar ${currentBets.length} apuesta${currentBets.length > 1 ? 's' : ''}`;
+    } else {
+      submitBtn.textContent = 'Confirmar Apuestas';
+    }
+  }
 }
 
-function updateBetsDisplay() {
-    // Resaltar opciones apostadas
-    document.querySelectorAll('.answer-option').forEach(option => {
-        option.classList.remove('bet-placed');
-        const existingBadge = option.querySelector('.bet-badge');
-        if (existingBadge) existingBadge.remove();
-    });
-
-    currentBets.forEach(bet => {
-        const option = document.querySelector(`[data-position="${bet.position}"]`);
-        if (option) {
-            option.classList.add('bet-placed');
-            
-            // Agregar badge con información de la apuesta
-            const badge = document.createElement('div');
-            badge.className = 'bet-badge';
-            const totalBet = bet.amount + bet.pokerChips;
-            badge.innerHTML = `
-                <span>Apostado: 1 token${bet.pokerChips > 0 ? ` + $${bet.pokerChips}` : ''}</span>
-                ${bet.pokerChips > 0 ? `<span style="color: var(--danger-color);">⚠️ Riesgo</span>` : ''}
-            `;
-            option.appendChild(badge);
-        }
-    });
+function removeBet(index) {
+  currentBets.splice(index, 1);
+  updateBetsVisualDisplay();
+  NotificationSystem.info('Apuesta removida');
 }
 
 function submitBets() {
-    if (currentBets.length === 0) {
-        alert('Debes hacer al menos una apuesta');
-        return;
+  if (currentBets.length === 0) {
+    NotificationSystem.warning('Debes hacer al menos una apuesta');
+    return;
+  }
+
+  state.socket.emit('player:placeBet', {
+    code: state.roomCode,
+    playerId: state.playerId,
+    bets: currentBets
+  }, (response) => {
+    if (!response.success) {
+      NotificationSystem.error('Error: ' + response.error);
+      return;
     }
 
-    state.socket.emit('player:placeBet', {
-        code: state.roomCode,
-        playerId: state.playerId,
-        bets: currentBets
-    }, (response) => {
-        if (!response.success) {
-            alert('Error: ' + response.error);
-            return;
-        }
-
-        showWaitingScreen('Esperando resultados...');
-    });
+    showWaitingScreen('Esperando resultados...');
+  });
 }
 
 function showResultsScreen(data) {
-    hideAllPlayerSections();
+  hideAllPlayerSections();
 
-    const resultsScreen = document.getElementById('results-screen');
-    resultsScreen.classList.remove('hidden');
+  const resultsScreen = document.getElementById('results-screen');
+  resultsScreen.classList.remove('hidden');
 
-    const resultsInfo = document.getElementById('results-info');
-    resultsInfo.innerHTML = `
+  // Desactivar ayuda de orientación en resultados
+  if (window.OrientationHelper) {
+    OrientationHelper.disable();
+  }
+
+  const resultsInfo = document.getElementById('results-info');
+  resultsInfo.innerHTML = `
     <div class="result-correct">
       <strong>Respuesta Correcta:</strong> ${data.correctAnswer}
     </div>
     ${data.allTooHigh ?
-            '<div class="result-all-high">⚠️ Todas las respuestas fueron muy altas</div>' :
-            `<div class="result-winning">
+      '<div class="result-all-high">⚠️ Todas las respuestas fueron muy altas</div>' :
+      `<div class="result-winning">
         <strong>Respuesta Ganadora:</strong> ${data.winningAnswer}
       </div>`
-        }
+    }
     ${data.trivia ? `<div class="result-trivia">💡 ${data.trivia}</div>` : ''}
   `;
 
-    // Calcular ganancias/pérdidas del jugador
-    const playerData = data.players.find(p => p.id === state.playerId);
-    const previousMoney = parseInt(document.getElementById('player-money').textContent) || 0;
-    const currentMoney = playerData ? playerData.money : previousMoney;
-    const difference = currentMoney - previousMoney;
-    
-    // Actualizar dinero del jugador
-    if (playerData) {
-        document.getElementById('player-money').textContent = playerData.money;
-    }
+  // Calcular ganancias/pérdidas del jugador
+  const playerData = data.players.find(p => p.id === state.playerId);
+  const previousMoney = parseInt(document.getElementById('player-money').textContent) || 0;
+  const currentMoney = playerData ? playerData.money : previousMoney;
+  const difference = currentMoney - previousMoney;
 
-    // Mostrar si ganó algo
-    const playerWon = data.winners.find(w => w.id === state.playerId);
-    const playerResult = document.getElementById('player-result');
+  // Actualizar dinero del jugador
+  if (playerData) {
+    document.getElementById('player-money').textContent = playerData.money;
+  }
 
-    if (playerWon) {
-        playerResult.innerHTML = `
+  // Mostrar si ganó algo
+  const playerWon = data.winners.find(w => w.id === state.playerId);
+  const playerResult = document.getElementById('player-result');
+
+  if (playerWon) {
+    playerResult.innerHTML = `
       <div class="win-badge">🎉 ¡Respuesta Ganadora!</div>
       <div class="win-amount">+$${playerWon.bonus} (Bono)</div>
     `;
-        playerResult.className = 'player-result-card winner';
-    } else {
-        playerResult.innerHTML = `
+    playerResult.className = 'player-result-card winner';
+  } else {
+    playerResult.innerHTML = `
       <div class="neutral-message">No acertaste la respuesta ganadora</div>
     `;
-        playerResult.className = 'player-result-card';
-    }
-    
-    // Agregar información de apuestas
-    if (difference > 0) {
-        const betWinnings = document.createElement('div');
-        betWinnings.className = 'bet-winnings';
-        betWinnings.innerHTML = `
+    playerResult.className = 'player-result-card';
+  }
+
+  // Agregar información de apuestas
+  if (difference > 0) {
+    const betWinnings = document.createElement('div');
+    betWinnings.className = 'bet-winnings';
+    betWinnings.innerHTML = `
             <div class="win-badge">💰 ¡Apuestas Ganadoras!</div>
             <div class="win-amount">+$${difference}${playerWon ? ' (Total con bono)' : ''}</div>
         `;
-        playerResult.appendChild(betWinnings);
-    } else if (difference < 0) {
-        const betLoss = document.createElement('div');
-        betLoss.className = 'bet-loss';
-        betLoss.innerHTML = `
+    playerResult.appendChild(betWinnings);
+  } else if (difference < 0) {
+    const betLoss = document.createElement('div');
+    betLoss.className = 'bet-loss';
+    betLoss.innerHTML = `
             <div class="loss-badge">❌ Fichas de Póquer Perdidas</div>
             <div class="loss-amount">-$${Math.abs(difference)}</div>
             <div class="loss-message">Tus apuestas no ganaron y perdiste las fichas de póquer apostadas</div>
         `;
-        playerResult.appendChild(betLoss);
-    }
+    playerResult.appendChild(betLoss);
+  }
 }
 
 function showGameEndScreen(data) {
-    hideAllPlayerSections();
+  hideAllPlayerSections();
 
-    const app = document.getElementById('app');
-    app.innerHTML = `
+  const app = document.getElementById('app');
+  app.innerHTML = `
     <div class="game-end-screen">
       <h1 class="game-end-title">🏆 Juego Terminado</h1>
       
@@ -475,31 +668,36 @@ function showGameEndScreen(data) {
 }
 
 function showWaitingScreen(message) {
-    hideAllPlayerSections();
 
-    const waitingScreen = document.getElementById('waiting-screen');
-    waitingScreen.classList.remove('hidden');
-    waitingScreen.querySelector('p').textContent = message;
+  // Desactivar ayuda de orientación en pantallas de espera
+  if (window.OrientationHelper) {
+    OrientationHelper.disable();
+  }
+  hideAllPlayerSections();
+
+  const waitingScreen = document.getElementById('waiting-screen');
+  waitingScreen.classList.remove('hidden');
+  waitingScreen.querySelector('p').textContent = message;
 }
 
 function hideAllPlayerSections() {
-    document.querySelectorAll('.player-section').forEach(section => {
-        section.classList.add('hidden');
-    });
+  document.querySelectorAll('.player-section').forEach(section => {
+    section.classList.add('hidden');
+  });
 }
 
 function getOddsText(position) {
-    const oddsMap = {
-        '6to1-all-high': '6 a 1',
-        '5to1-red': '5 a 1',
-        '5to1-black': '5 a 1',
-        '4to1-red': '4 a 1',
-        '4to1-black': '4 a 1',
-        '3to1-red': '3 a 1',
-        '3to1-black': '3 a 1',
-        '2to1-green': '2 a 1'
-    };
-    return oddsMap[position] || '';
+  const oddsMap = {
+    '6to1-all-high': '6 a 1',
+    '5to1-red': '5 a 1',
+    '5to1-black': '5 a 1',
+    '4to1-red': '4 a 1',
+    '4to1-black': '4 a 1',
+    '3to1-red': '3 a 1',
+    '3to1-black': '3 a 1',
+    '2to1-green': '2 a 1'
+  };
+  return oddsMap[position] || '';
 }
 
 // CSS adicional para jugador
@@ -864,9 +1062,9 @@ const playerStyles = `
   background: var(--card-bg);
   border-radius: var(--border-radius);
   padding: 2rem;
-  max-width: 400px;
+  max-width: 450px;
   width: 90%;
-  max-height: 80vh;
+  max-height: 85vh;
   overflow-y: auto;
 }
 
@@ -942,10 +1140,13 @@ const playerStyles = `
   display: flex;
   gap: 1rem;
   margin-top: 1.5rem;
+  flex-wrap: wrap;
 }
 
 .bet-modal-buttons button {
   flex: 1;
+  min-width: 100px;
+  word-wrap: break-word;
 }
 
 .bet-badge {
@@ -973,6 +1174,424 @@ const playerStyles = `
   0%, 100% { opacity: 1; }
   50% { opacity: 0.8; }
 }
+
+/* Estilos para tablero interactivo de jugador */
+.player-betting-header {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+
+.money-info,
+.tokens-info {
+  background: var(--card-bg);
+  padding: 1rem;
+  border-radius: 8px;
+  text-align: center;
+}
+
+.money-label,
+.tokens-label {
+  font-size: 0.9rem;
+  color: #999;
+  margin-bottom: 0.3rem;
+}
+
+.money-amount {
+  font-size: 1.5rem;
+  font-weight: bold;
+  color: var(--success-color);
+}
+
+.tokens-remaining {
+  font-size: 1.5rem;
+  font-weight: bold;
+  color: var(--primary-color);
+}
+
+.betting-tip {
+  background: rgba(255, 193, 7, 0.1);
+  border-left: 4px solid #ffc107;
+  padding: 0.75rem;
+  border-radius: 4px;
+  margin-bottom: 1rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.85rem;
+  color: #ffc107;
+}
+
+.tip-icon {
+  font-size: 1.2rem;
+}
+
+/* Tablero miniatura para jugador */
+.player-betting-board {
+  background: linear-gradient(135deg, #1a6b2e 0%, #0d3d1a 100%);
+  border: 4px solid var(--primary-color);
+  border-radius: 12px;
+  padding: 1rem;
+  margin-bottom: 1rem;
+}
+
+.mini-board-grid {
+  display: grid;
+  grid-template-columns: repeat(8, 1fr);
+  gap: 0.4rem;
+  margin-bottom: 0.5rem;
+}
+
+.mini-bet-space {
+  aspect-ratio: 3/4;
+  border: 3px solid;
+  border-radius: 6px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.4rem 0.2rem;
+  position: relative;
+  transition: all 0.2s ease;
+  font-size: 0.75rem;
+  min-height: 100px;
+}
+
+.mini-bet-space:not(.blocked) {
+  cursor: pointer;
+}
+
+.mini-bet-space:not(.blocked):active {
+  transform: scale(0.95);
+}
+
+.mini-bet-space.red {
+  background: linear-gradient(135deg, #dc143c 0%, #8b0000 100%);
+  border-color: #ffd700;
+  color: white;
+}
+
+.mini-bet-space.green {
+  background: linear-gradient(135deg, #32cd32 0%, #228b22 100%);
+  border-color: #ffd700;
+  color: white;
+}
+
+.mini-bet-space.black {
+  background: linear-gradient(135deg, #2a2a2a 0%, #000 100%);
+  border-color: #ffd700;
+  color: white;
+}
+
+.mini-bet-space.all-high {
+  background: linear-gradient(135deg, #ffd700 0%, #ffa500 100%);
+  border-color: #8b0000;
+  color: #000;
+  font-weight: bold;
+}
+
+.mini-bet-space.blocked {
+  background: repeating-linear-gradient(
+    45deg,
+    #666,
+    #666 8px,
+    #444 8px,
+    #444 16px
+  );
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.blocked-icon {
+  position: absolute;
+  font-size: 2rem;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
+
+.mini-odds {
+  font-weight: bold;
+  font-size: 0.85rem;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5);
+}
+
+.mini-label {
+  font-size: 0.6rem;
+  font-weight: bold;
+  text-align: center;
+}
+
+.mini-answer-value {
+  font-size: 1.1rem;
+  font-weight: bold;
+  text-shadow: 0 2px 3px rgba(0, 0, 0, 0.8);
+  margin: auto 0;
+}
+
+.mini-answer-player {
+  font-size: 0.65rem;
+  opacity: 0.9;
+  text-align: center;
+  margin-top: 0.2rem;
+}
+
+.mini-bet-indicator {
+  width: 100%;
+  min-height: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.mini-bet-indicator.has-bet {
+  background: rgba(212, 175, 55, 0.3);
+  border-top: 2px solid var(--primary-color);
+  border-radius: 4px;
+}
+
+.bet-chip-indicator {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.1rem;
+  font-size: 0.7rem;
+  font-weight: bold;
+}
+
+.chip-count {
+  color: var(--primary-color);
+}
+
+.poker-count {
+  color: #ffc107;
+  font-size: 0.65rem;
+}
+
+/* Apuestas especiales */
+.mini-board-special {
+  display: grid;
+  grid-template-columns: repeat(8, 1fr);
+  gap: 0.4rem;
+}
+
+.mini-special-bet {
+  padding: 0.75rem 0.5rem;
+  border: 3px solid #ffd700;
+  border-radius: 6px;
+  text-align: center;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  min-height: 70px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+}
+
+.mini-special-bet:active {
+  transform: scale(0.95);
+}
+
+.red-special {
+  background: linear-gradient(135deg, #dc143c 0%, #8b0000 100%);
+  color: white;
+  grid-column: 2 / 5; /* Debajo de las 3 casillas rojas */
+}
+
+.black-special {
+  background: linear-gradient(135deg, #2a2a2a 0%, #000 100%);
+  color: white;
+  grid-column: 6 / 9; /* Debajo de las 3 casillas negras */
+}
+
+.mini-special-title {
+  font-size: 0.9rem;
+  font-weight: bold;
+  margin-bottom: 0.2rem;
+}
+
+.mini-special-desc {
+  font-size: 0.65rem;
+  opacity: 0.9;
+  color: #ffd700;
+}
+
+/* Display de apuestas actuales */
+.current-bets-display {
+  background: var(--card-bg);
+  border-radius: 8px;
+  padding: 1rem;
+  margin-bottom: 1rem;
+}
+
+.current-bets-title {
+  font-size: 1rem;
+  font-weight: bold;
+  color: var(--primary-color);
+  margin-bottom: 0.75rem;
+}
+
+.current-bets-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.no-bets {
+  text-align: center;
+  color: #999;
+  padding: 1rem;
+  font-style: italic;
+}
+
+.current-bet-item {
+  background: rgba(212, 175, 55, 0.1);
+  border: 2px solid var(--primary-color);
+  border-radius: 6px;
+  padding: 0.75rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  animation: slideInLeft 0.3s ease;
+}
+
+@keyframes slideInLeft {
+  from {
+    opacity: 0;
+    transform: translateX(-20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+.current-bet-info {
+  flex: 1;
+}
+
+.current-bet-name {
+  font-weight: bold;
+  margin-bottom: 0.2rem;
+}
+
+.current-bet-details {
+  font-size: 0.85rem;
+  color: #999;
+}
+
+.bet-odds {
+  color: var(--primary-color);
+  font-weight: bold;
+}
+
+.btn-remove-bet {
+  background: var(--danger-color);
+  color: white;
+  border: none;
+  border-radius: 50%;
+  width: 28px;
+  height: 28px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  font-size: 1.2rem;
+  font-weight: bold;
+  transition: all 0.2s ease;
+  flex-shrink: 0;
+  margin-left: 0.5rem;
+}
+
+.btn-remove-bet:hover {
+  background: #c82333;
+  transform: scale(1.1);
+}
+
+/* Modal de apuesta mejorado */
+.bet-position-info {
+  background: rgba(212, 175, 55, 0.1);
+  border: 2px solid var(--primary-color);
+  border-radius: 8px;
+  padding: 1rem;
+  margin-bottom: 1rem;
+  text-align: center;
+}
+
+.bet-position-name {
+  font-size: 1.2rem;
+  font-weight: bold;
+  color: var(--primary-color);
+  margin-bottom: 0.3rem;
+}
+
+.bet-position-value {
+  font-size: 1.5rem;
+  font-weight: bold;
+  margin: 0.5rem 0;
+}
+
+.bet-position-player {
+  font-size: 0.9rem;
+  color: #999;
+  margin-bottom: 0.3rem;
+}
+
+.bet-position-odds {
+  font-size: 1rem;
+  color: var(--success-color);
+  font-weight: bold;
+}
+
+.btn-modal {
+  padding: 0.7rem 1rem;
+  font-size: 0.9rem;
+}
+
+.warning-text {
+  color: var(--danger-color) !important;
+}
+
+/* Responsivo */
+@media (max-width: 768px) {
+  .mini-board-grid {
+    grid-template-columns: repeat(8, 1fr);
+    gap: 0.25rem;
+  }
+  
+  .mini-bet-space {
+    min-height: 70px;
+    padding: 0.25rem 0.1rem;
+    font-size: 0.65rem;
+  }
+  
+  .mini-answer-value {
+    font-size: 0.85rem;
+  }
+  
+  .mini-odds {
+    font-size: 0.7rem;
+  }
+
+  .player-betting-header {
+    grid-template-columns: 1fr;
+  }
+
+  .bet-modal-buttons {
+    flex-direction: column;
+  }
+
+  .bet-modal-buttons button {
+    width: 100%;
+  }
+  
+  .mini-board-special {
+    grid-template-columns: repeat(8, 1fr);
+  }
+}
 </style>
 `;
 
@@ -986,3 +1605,4 @@ window.showResultsScreen = showResultsScreen;
 window.showGameEndScreen = showGameEndScreen;
 window.closeBetModal = closeBetModal;
 window.confirmBet = confirmBet;
+window.removeBet = removeBet;

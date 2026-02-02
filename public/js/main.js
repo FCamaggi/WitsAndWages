@@ -184,7 +184,7 @@ function renderCategories(categories) {
         if (!cat || !cat.id || !cat.nombre) return false;
         const nombre = cat.nombre.toLowerCase();
         const id = cat.id.toLowerCase();
-        
+
         // Excluir tarjetas, conjuntos, y otras categorías no deseadas
         const excludePatterns = [
             'tarjeta',
@@ -193,8 +193,8 @@ function renderCategories(categories) {
             'verificado',
             'expandido'
         ];
-        
-        return !excludePatterns.some(pattern => 
+
+        return !excludePatterns.some(pattern =>
             nombre.includes(pattern) || id.includes(pattern)
         );
     });
@@ -366,24 +366,29 @@ function connectSocket() {
     });
 
     state.socket.on('round:started', (data) => {
-        console.log('Ronda iniciada:', data);
-        
+        console.log('🎲 Ronda iniciada:', data);
+
         // Guardar número de ronda
         state.currentRound = data.roundNumber;
-        
+
+        // Mostrar pregunta en el tablero del host
+        if (state.role === 'host' && typeof window.showQuestion === 'function') {
+            window.showQuestion(data.question);
+        }
+
         if (state.role === 'player') {
             showQuestionScreen(data);
         }
     });
 
     state.socket.on('round:bettingPhase', (data) => {
-        console.log('Fase de apuestas:', data);
-        
-        // Actualizar tablero en pantalla del host
-        if (state.role === 'host' && typeof window.updateBoardWithAnswers === 'function') {
-            window.updateBoardWithAnswers(data.answers, data.blockers);
+        console.log('💰 Fase de apuestas:', data);
+
+        // Mostrar respuestas en el tablero del host
+        if (state.role === 'host' && typeof window.showAnswers === 'function' && data.answers) {
+            window.showAnswers(data.answers);
         }
-        
+
         if (state.role === 'player') {
             // Guardar número de ronda actual
             state.currentRound = data.roundNumber || state.currentRound;
@@ -391,15 +396,28 @@ function connectSocket() {
         }
     });
 
-    state.socket.on('round:revealed', (data) => {
-        console.log('Respuesta revelada:', data);
-        
-        // Resaltar respuesta ganadora en el tablero del host
-        if (state.role === 'host' && typeof window.highlightWinningAnswer === 'function') {
-            window.highlightWinningAnswer(data.winningPosition, data.allTooHigh);
+    state.socket.on('round:betsUpdated', (data) => {
+        console.log('💸 Apuestas actualizadas:', data);
+
+        // Mostrar fichas en el tablero del host
+        if (state.role === 'host' && typeof window.showBets === 'function' && data.bets) {
+            window.showBets(data.bets);
         }
-        
-        showResultsScreen(data);
+    });
+
+    state.socket.on('round:revealed', (data) => {
+        console.log('🎯 Respuesta revelada:', data);
+
+        // Para el host - resaltar la respuesta correcta
+        if (state.role === 'host') {
+            // Aquí puedes agregar lógica para resaltar la respuesta ganadora
+            console.log('Respuesta correcta:', data.correctAnswer);
+        }
+
+        // Para el jugador - mostrar resultados
+        if (state.role === 'player') {
+            showResultsScreen(data);
+        }
     });
 
     state.socket.on('game:ended', (data) => {

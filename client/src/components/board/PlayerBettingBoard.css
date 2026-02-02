@@ -1,0 +1,907 @@
+/* TABLERO DE APUESTAS DEL JUGADOR - ESTILOS */
+
+.player-betting-board {
+  background: rgba(20, 20, 30, 0.95);
+  border-radius: 12px;
+  padding: 1rem;
+  max-width: 700px;
+  margin: 0 auto;
+}
+
+/* Header de información */
+.betting-header {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+  margin-bottom: 1rem;
+  padding: 1rem;
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 8px;
+}
+
+.money-info,
+.tokens-info {
+  text-align: center;
+}
+
+.money-label,
+.tokens-label {
+  font-size: 0.85rem;
+  color: #999;
+  margin-bottom: 4px;
+}
+
+.money-amount {
+  font-size: 1.8rem;
+  font-weight: bold;
+  color: #51cf66;
+}
+
+.tokens-remaining {
+  font-size: 1.8rem;
+  font-weight: bold;
+  color: #ffd700;
+}
+
+/* Fila principal horizontal - 8 casillas iguales */
+.mini-board-main-row {
+  display: grid;
+  grid-template-columns: repeat(8, 1fr);
+  gap: 6px;
+  margin-bottom: 8px;
+}
+
+/* Espacios de apuesta - rectángulos verticales */
+.mini-bet-space {
+  min-height: 140px;
+  border-radius: 6px;
+  padding: 6px 4px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-between;
+  position: relative;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.4);
+  border: 2px solid rgba(255, 255, 255, 0.1);
+}
+
+/* Casillas anchas */
+.row-all-high .mini-bet-space,
+.row-green .mini-bet-space {
+  width: 100%;
+}
+
+.mini-bet-space:hover:not(.blocked) {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.6);
+  border-color: rgba(255, 255, 255, 0.3);
+}
+
+.mini-bet-space.has-bet {
+  border-color: #ffd700;
+  border-width: 3px;
+}
+
+.mini-bet-space.all-high {
+  background: linear-gradient(135deg, #ffd700 0%, #d4af37 100%);
+}
+
+.mini-bet-space.red {
+  background: linear-gradient(135deg, #ff6b6b 0%, #c92a2a 100%);
+}
+
+.mini-bet-space.green {
+  background: linear-gradient(135deg, #51cf66 0%, #2f9e44 100%);
+}
+
+.mini-bet-space.black {
+  background: linear-gradient(135deg, #495057 0%, #212529 100%);
+}
+
+.mini-bet-space.blocked {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.mini-bet-space.blocked:hover {
+  transform: none;
+}
+
+/* Texto de odds */
+.mini-odds {
+  font-size: 1rem;
+  font-weight: bold;
+  color: white;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5);
+}
+
+.mini-label {
+  font-size: 0.7rem;
+  font-weight: bold;
+  color: rgba(255, 255, 255, 0.9);
+  text-transform: uppercase;
+  margin: 2px 0;
+}
+
+/* Respuestas */
+.mini-answer-value {
+  font-size: 1.1rem;
+  font-weight: bold;
+  color: white;
+  margin-top: 4px;
+}
+
+.mini-answer-player {
+  font-size: 0.7rem;
+  color: rgba(255, 255, 255, 0.8);
+  margin-top: 2px;
+  max-width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* Indicador de apuesta */
+.mini-bet-indicator {
+  position: absolute;
+  top: 4px;
+  right: 4px;
+  min-width: 28px;
+  min-height: 28px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.visual-chip {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: radial-gradient(circle at 30% 30%, #ffd700, #d4af37, #b8941f);
+  border: 3px solid #fff;
+  box-shadow:
+    0 2px 6px rgba(0, 0, 0, 0.6),
+    inset 0 2px 4px rgba(255, 255, 255, 0.4),
+    inset 0 -2px 4px rgba(0, 0, 0, 0.4);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 900;
+  font-size: 1.2rem;
+  color: #000;
+  animation: chipAppear 0.3s ease-out;
+}
+
+@keyframes chipAppear {
+  from {
+    transform: scale(0) rotate(0deg);
+    opacity: 0;
+  }
+  to {
+    transform: scale(1) rotate(360deg);
+    opacity: 1;
+  }
+}
+
+.blocked-icon {
+  position: absolute;
+  font-size: 2rem;
+  opacity: 0.8;
+}
+
+/* Apuestas especiales - alineadas exactamente con las columnas */
+.mini-board-special {
+  display: grid;
+  grid-template-columns: repeat(8, 1fr);
+  gap: 6px;
+  margin-bottom: 1rem;
+}
+
+/* Posicionamiento exacto de apuestas especiales */
+.spacer {
+  grid-column: 1 / 2;
+}
+
+.mini-special-bet.red-special {
+  grid-column: 2 / 5; /* Columnas 2-4: debajo de las rojas */
+}
+
+.spacer-middle {
+  grid-column: 5 / 6;
+}
+
+.mini-special-bet.black-special {
+  grid-column: 6 / 9; /* Columnas 6-8: debajo de las negras */
+}
+
+.mini-special-bet {
+  border-radius: 8px;
+  padding: 1rem;
+  text-align: center;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  position: relative;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.4);
+  border: 2px solid rgba(255, 255, 255, 0.1);
+  min-height: 70px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.mini-special-bet:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.6);
+  border-color: rgba(255, 255, 255, 0.3);
+}
+
+.mini-special-bet.red-special {
+  background: linear-gradient(135deg, #ff6b6b 0%, #c92a2a 100%);
+}
+
+.mini-special-bet.black-special {
+  background: linear-gradient(135deg, #495057 0%, #212529 100%);
+}
+
+.mini-special-title {
+  font-size: 1rem;
+  font-weight: bold;
+  color: white;
+  margin-bottom: 4px;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5);
+}
+
+.mini-special-desc {
+  font-size: 0.75rem;
+  color: rgba(255, 255, 255, 0.9);
+}
+
+/* Lista de apuestas actuales */
+.current-bets-display {
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 8px;
+  padding: 1rem;
+  margin-top: 1rem;
+}
+
+.current-bets-title {
+  font-size: 1rem;
+  font-weight: bold;
+  margin-bottom: 0.75rem;
+  color: #ffd700;
+}
+
+.current-bet-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.75rem;
+  background: rgba(0, 0, 0, 0.3);
+  border-radius: 6px;
+  margin-bottom: 0.5rem;
+}
+
+.current-bet-main {
+  flex: 1;
+}
+
+.current-bet-name {
+  font-weight: bold;
+  font-size: 0.9rem;
+}
+
+.current-bet-details {
+  font-size: 0.8rem;
+  color: #999;
+  margin-top: 2px;
+}
+
+.money-indicator {
+  color: #51cf66;
+  font-weight: bold;
+}
+
+.current-bet-actions {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.btn-add-money {
+  background: #51cf66;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  padding: 6px 12px;
+  cursor: pointer;
+  font-weight: bold;
+  font-size: 0.9rem;
+  transition: all 0.2s ease;
+}
+
+.btn-add-money:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(81, 207, 102, 0.4);
+  background: #69db7c;
+}
+
+.btn-remove-bet {
+  background: #ef4444;
+  color: white;
+  border: none;
+  border-radius: 50%;
+  width: 32px;
+  height: 32px;
+  cursor: pointer;
+  font-weight: bold;
+  font-size: 1.2rem;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.btn-remove-bet:hover {
+  transform: scale(1.1);
+  box-shadow: 0 2px 8px rgba(239, 68, 68, 0.4);
+}
+
+.no-bets {
+  text-align: center;
+  color: #666;
+  padding: 1.5rem;
+  font-style: italic;
+  font-size: 0.9rem;
+}
+
+/* Responsive */
+@media (max-width: 600px) {
+  .player-betting-board {
+    padding: 0.75rem;
+  }
+
+  .mini-board-main-row {
+    gap: 4px;
+    margin-bottom: 6px;
+  }
+
+  .mini-bet-space {
+    padding: 4px 2px;
+    min-height: 110px;
+  }
+
+  .mini-board-special {
+    gap: 4px;
+  }
+
+  .mini-special-bet {
+    padding: 0.75rem;
+    min-height: 60px;
+  }
+
+  .mini-odds {
+    font-size: 0.85rem;
+  }
+
+  .mini-answer-value {
+    font-size: 0.95rem;
+  }
+
+  .mini-answer-player {
+    font-size: 0.65rem;
+  }
+
+  .mini-special-title {
+    font-size: 0.9rem;
+  }
+
+  .mini-special-desc {
+    font-size: 0.7rem;
+  }
+}
+
+@media (orientation: landscape) and (max-height: 600px) {
+  .player-betting-board {
+    padding: 0.5rem;
+  }
+
+  .betting-header {
+    padding: 0.5rem;
+    margin-bottom: 0.5rem;
+  }
+
+  .money-amount,
+  .tokens-remaining {
+    font-size: 1.3rem;
+  }
+
+  .mini-board-main-row {
+    gap: 3px;
+    margin-bottom: 4px;
+  }
+
+  .mini-bet-space {
+    padding: 3px;
+    min-height: 65px;
+  }
+
+  .mini-odds {
+    font-size: 0.75rem;
+  }
+
+  .mini-answer-value {
+    font-size: 0.85rem;
+  }
+
+  .current-bets-display {
+    padding: 0.75rem;
+  }
+}
+
+/* ===== MODAL DE INVENTARIO DE FICHAS ===== */
+
+.bet-modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.8);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  animation: fadeIn 0.2s ease;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+.bet-modal {
+  background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+  border: 3px solid #ffd700;
+  border-radius: 16px;
+  padding: 0;
+  max-width: 500px;
+  width: 90%;
+  max-height: 90vh;
+  overflow-y: auto;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5);
+  animation: slideUp 0.3s ease;
+}
+
+@keyframes slideUp {
+  from {
+    transform: translateY(50px);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+.modal-header {
+  background: rgba(255, 215, 0, 0.1);
+  border-bottom: 2px solid rgba(255, 215, 0, 0.3);
+  padding: 20px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.modal-header h3 {
+  color: #ffd700;
+  margin: 0;
+  font-size: 24px;
+}
+
+.modal-close {
+  background: transparent;
+  border: none;
+  color: #ffd700;
+  font-size: 28px;
+  cursor: pointer;
+  padding: 0;
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s;
+}
+
+.modal-close:hover {
+  color: #fff;
+  transform: rotate(90deg);
+}
+
+.modal-body {
+  padding: 25px;
+}
+
+/* Selección de fichas de apuesta */
+.token-selection {
+  margin-bottom: 25px;
+}
+
+.section-title {
+  display: block;
+  color: #ffd700;
+  font-weight: 600;
+  margin-bottom: 15px;
+  font-size: 16px;
+}
+
+.token-options {
+  display: flex;
+  gap: 15px;
+  justify-content: center;
+}
+
+.token-btn {
+  flex: 1;
+  background: rgba(255, 255, 255, 0.05);
+  border: 3px solid rgba(255, 215, 0, 0.3);
+  border-radius: 12px;
+  padding: 20px;
+  cursor: pointer;
+  transition: all 0.3s;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+}
+
+.token-btn:hover {
+  border-color: rgba(255, 215, 0, 0.6);
+  background: rgba(255, 255, 255, 0.1);
+  transform: translateY(-2px);
+}
+
+.token-btn.selected {
+  border-color: #ffd700;
+  background: rgba(255, 215, 0, 0.2);
+  box-shadow: 0 0 20px rgba(255, 215, 0, 0.3);
+}
+
+.token-visual {
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 24px;
+  font-weight: bold;
+  color: white;
+  border: 3px solid rgba(255, 255, 255, 0.3);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+}
+
+.token-visual-group {
+  display: flex;
+  gap: 10px;
+}
+
+/* Colores de fichas según jugador */
+.token-visual.red {
+  background: linear-gradient(135deg, #ff6b6b 0%, #c92a2a 100%);
+}
+
+.token-visual.blue {
+  background: linear-gradient(135deg, #4dabf7 0%, #1971c2 100%);
+}
+
+.token-visual.green {
+  background: linear-gradient(135deg, #51cf66 0%, #2f9e44 100%);
+}
+
+.token-visual.yellow {
+  background: linear-gradient(135deg, #ffd43b 0%, #fab005 100%);
+}
+
+.token-visual.purple {
+  background: linear-gradient(135deg, #cc5de8 0%, #9c36b5 100%);
+}
+
+.token-visual.orange {
+  background: linear-gradient(135deg, #ff922b 0%, #e8590c 100%);
+}
+
+.token-visual.pink {
+  background: linear-gradient(135deg, #ff6b9d 0%, #e64980 100%);
+}
+
+.token-btn span {
+  color: white;
+  font-size: 14px;
+  font-weight: 600;
+}
+
+/* Fichas de póquer */
+.poker-chips-selection {
+  margin-bottom: 20px;
+  padding: 20px;
+  background: rgba(255, 215, 0, 0.05);
+  border-radius: 8px;
+  border: 2px dashed rgba(255, 215, 0, 0.3);
+}
+
+.poker-input-group {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 10px;
+}
+
+.dollar-sign {
+  font-size: 24px;
+  color: #51cf66;
+  font-weight: bold;
+}
+
+.poker-input-group input {
+  flex: 1;
+  padding: 12px;
+  font-size: 20px;
+  border-radius: 8px;
+  border: 2px solid rgba(255, 215, 0, 0.5);
+  background: rgba(255, 255, 255, 0.1);
+  color: white;
+  text-align: center;
+}
+
+.available-label {
+  color: #999;
+  font-size: 14px;
+}
+
+.poker-warning {
+  color: #ff922b;
+  font-size: 13px;
+  margin: 10px 0 0 0;
+  padding: 8px;
+  background: rgba(255, 146, 43, 0.1);
+  border-radius: 6px;
+}
+
+/* Resumen */
+.bet-summary {
+  background: rgba(76, 175, 80, 0.1);
+  border: 2px solid rgba(76, 175, 80, 0.3);
+  border-radius: 8px;
+  padding: 15px;
+  margin-top: 20px;
+}
+
+.bet-summary p {
+  margin: 5px 0;
+  color: white;
+  font-size: 15px;
+}
+
+/* Footer del modal */
+.modal-footer {
+  background: rgba(0, 0, 0, 0.2);
+  border-top: 2px solid rgba(255, 215, 0, 0.3);
+  padding: 20px;
+  display: flex;
+  gap: 15px;
+}
+
+.modal-footer button {
+  flex: 1;
+  padding: 15px;
+  font-size: 16px;
+  font-weight: 600;
+}
+
+/* Estilos actualizados para indicador de fichas */
+.chip-count {
+  font-size: 18px;
+  font-weight: bold;
+}
+
+.poker-chips-badge {
+  position: absolute;
+  bottom: 2px;
+  right: 2px;
+  background: #ffd700;
+  color: #1a1a1a;
+  font-size: 10px;
+  padding: 2px 6px;
+  border-radius: 10px;
+  font-weight: bold;
+  border: 1px solid white;
+}
+
+/* Estilos para modal de dinero */
+.money-modal {
+  max-width: 400px;
+}
+
+.position-info {
+  background: rgba(255, 255, 255, 0.05);
+  padding: 0.75rem;
+  border-radius: 6px;
+  margin-bottom: 1rem;
+  text-align: center;
+}
+
+.position-info strong {
+  color: #ffd700;
+  font-size: 1.1rem;
+}
+
+.tokens-info-modal {
+  text-align: center;
+  color: #999;
+  margin-bottom: 1.5rem;
+}
+
+.money-input-section {
+  margin: 1.5rem 0;
+}
+
+.money-input-wrapper {
+  display: flex;
+  align-items: center;
+  background: rgba(0, 0, 0, 0.3);
+  border-radius: 8px;
+  padding: 0.5rem;
+  border: 2px solid #51cf66;
+  margin-top: 0.5rem;
+}
+
+.currency-symbol {
+  font-size: 1.5rem;
+  font-weight: bold;
+  color: #51cf66;
+  margin-right: 0.5rem;
+}
+
+.money-input {
+  flex: 1;
+  background: transparent;
+  border: none;
+  color: white;
+  font-size: 1.5rem;
+  font-weight: bold;
+  outline: none;
+  padding: 0.5rem;
+}
+
+.money-input::-webkit-inner-spin-button,
+.money-input::-webkit-outer-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+.money-input[type='number'] {
+  -moz-appearance: textfield;
+}
+
+.money-available {
+  text-align: right;
+  color: #999;
+  font-size: 0.85rem;
+  margin-top: 0.5rem;
+}
+
+.modal-warning {
+  background: rgba(239, 68, 68, 0.1);
+  border-left: 4px solid #ef4444;
+  padding: 0.75rem;
+  border-radius: 6px;
+  color: #fca5a5;
+  font-size: 0.9rem;
+  margin-top: 1rem;
+}
+
+.modal-note {
+  background: rgba(81, 207, 102, 0.1);
+  border-left: 4px solid #51cf66;
+  padding: 0.75rem;
+  border-radius: 6px;
+  color: #a3e635;
+  font-size: 0.85rem;
+  margin-top: 1rem;
+}
+
+.tokens-remaining-info {
+  text-align: center;
+  color: #ffd700;
+  font-weight: bold;
+  margin-top: 1rem;
+  font-size: 0.9rem;
+}
+
+/* Estilos para fichas en posición */
+.tokens-here-section {
+  margin: 1.5rem 0;
+  padding: 1rem;
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 8px;
+}
+
+.tokens-here-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  margin-top: 0.75rem;
+}
+
+.token-here-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.75rem;
+  background: rgba(0, 0, 0, 0.3);
+  border-radius: 6px;
+}
+
+.btn-remove-small {
+  background: #ef4444;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  padding: 6px 12px;
+  cursor: pointer;
+  font-weight: bold;
+  font-size: 0.85rem;
+  transition: all 0.2s ease;
+}
+
+.btn-remove-small:hover {
+  background: #dc2626;
+  transform: translateY(-1px);
+}
+
+.no-money {
+  color: #666;
+  font-style: italic;
+}
+
+/* Mobile responsive */
+@media (max-width: 768px) {
+  .bet-modal {
+    width: 95%;
+    max-height: 95vh;
+  }
+
+  .money-modal {
+    max-width: 95%;
+  }
+
+  .token-options {
+    flex-direction: column;
+  }
+
+  .token-btn {
+    padding: 15px;
+  }
+
+  .token-visual {
+    width: 40px;
+    height: 40px;
+    font-size: 20px;
+  }
+
+  .modal-header h3 {
+    font-size: 20px;
+  }
+
+  .current-bet-actions {
+    flex-direction: column;
+  }
+
+  .btn-add-money {
+    font-size: 0.8rem;
+    padding: 4px 8px;
+  }
+}

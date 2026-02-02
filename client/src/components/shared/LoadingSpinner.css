@@ -1,0 +1,115 @@
+/* Loading Spinner - Casino chips animados */
+.loading-spinner-wrapper {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 1.5rem;
+  padding: 2rem;
+}
+
+.loading-spinner-wrapper.fullscreen {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.8);
+  backdrop-filter: blur(10px);
+  z-index: 9998;
+}
+
+.loading-spinner {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Tamaños */
+.loading-spinner.small {
+  width: 40px;
+  height: 40px;
+}
+
+.loading-spinner.medium {
+  width: 60px;
+  height: 60px;
+}
+
+.loading-spinner.large {
+  width: 80px;
+  height: 80px;
+}
+
+/* Chips animados */
+.spinner-chip {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  background: radial-gradient(
+    circle at 30% 30%,
+    #FFD700,
+    #D4AF37,
+    #B8941F
+  );
+  border: 3px solid #fff;
+  box-shadow:
+    0 4px 12px rgba(0, 0, 0, 0.6),
+    inset 0 2px 4px rgba(255, 255, 255, 0.4),
+    inset 0 -2px 4px rgba(0, 0, 0, 0.4);
+  animation: spinChip 1.2s ease-in-out infinite;
+}
+
+.spinner-chip-1 {
+  animation-delay: 0s;
+}
+
+.spinner-chip-2 {
+  animation-delay: 0.4s;
+}
+
+.spinner-chip-3 {
+  animation-delay: 0.8s;
+}
+
+@keyframes spinChip {
+  0% {
+    transform: scale(0) rotate(0deg);
+    opacity: 0;
+  }
+  50% {
+    transform: scale(1) rotate(180deg);
+    opacity: 1;
+  }
+  100% {
+    transform: scale(0) rotate(360deg);
+    opacity: 0;
+  }
+}
+
+.loading-message {
+  color: #fff;
+  font-size: 1.1rem;
+  font-weight: 500;
+  text-align: center;
+  margin: 0;
+  animation: pulse 1.5s ease-in-out infinite;
+}
+
+@keyframes pulse {
+  0%, 100% {
+    opacity: 0.6;
+  }
+  50% {
+    opacity: 1;
+  }
+}
+
+/* Mobile adjustments */
+@media (max-width: 768px) {
+  .loading-message {
+    font-size: 1rem;
+  }
+}

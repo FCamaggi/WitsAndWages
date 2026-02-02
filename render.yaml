@@ -1,9 +1,17 @@
-{
-  'version': 2,
-  'builds': [{ 'src': 'server/index.js', 'use': '@vercel/node' }],
-  'routes':
-    [
-      { 'src': '/api/(.*)', 'dest': 'server/index.js' },
-      { 'src': '/socket.io/(.*)', 'dest': 'server/index.js' },
-    ],
-}
+services:
+  - type: web
+    name: wits-and-wagers-backend
+    env: node
+    buildCommand: cd server && npm install
+    startCommand: cd server && npm start
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: PORT
+        value: 3000
+      - key: MONGODB_URI
+        sync: false
+      - key: CLIENT_URL
+        value: https://witsandwages.netlify.app
+      - key: ALLOWED_ORIGINS
+        value: https://witsandwages.netlify.app

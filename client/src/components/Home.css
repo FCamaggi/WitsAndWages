@@ -1,0 +1,256 @@
+.home {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem;
+  background: linear-gradient(135deg, #0F1419 0%, #1A1F2E 50%, #0F1419 100%);
+  position: relative;
+  overflow: hidden;
+}
+
+/* Efecto de partículas de fondo */
+.home::before {
+  content: '';
+  position: absolute;
+  width: 200%;
+  height: 200%;
+  background: radial-gradient(circle, rgba(255, 215, 0, 0.03) 1px, transparent 1px);
+  background-size: 50px 50px;
+  animation: moveBackground 60s linear infinite;
+  z-index: 0;
+}
+
+@keyframes moveBackground {
+  0% { transform: translate(0, 0); }
+  100% { transform: translate(50px, 50px); }
+}
+
+.home-container {
+  max-width: 1000px;
+  width: 100%;
+  position: relative;
+  z-index: 1;
+  animation: fadeInScale 0.6s ease-out;
+}
+
+@keyframes fadeInScale {
+  from {
+    opacity: 0;
+    transform: scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+/* Título mejorado con efecto neón */
+.title {
+  animation: neonGlow 2s ease-in-out infinite alternate,
+             slideDown 0.8s ease-out;
+  text-shadow: 0 0 10px rgba(255, 215, 0, 0.5),
+               0 0 20px rgba(255, 215, 0, 0.3),
+               0 0 30px rgba(255, 215, 0, 0.2);
+}
+
+@keyframes neonGlow {
+  from {
+    text-shadow: 0 0 10px rgba(255, 215, 0, 0.5),
+                 0 0 20px rgba(255, 215, 0, 0.3),
+                 0 0 30px rgba(255, 215, 0, 0.2);
+  }
+  to {
+    text-shadow: 0 0 15px rgba(255, 215, 0, 0.8),
+                 0 0 30px rgba(255, 215, 0, 0.5),
+                 0 0 45px rgba(255, 215, 0, 0.3);
+  }
+}
+
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    transform: translateY(-30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.subtitle {
+  animation: fadeIn 1s ease-out 0.3s both;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+.home-cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+  gap: 2.5rem;
+  margin: 3rem 0;
+}
+
+.home-card {
+  background: linear-gradient(135deg, rgba(26, 31, 46, 0.9) 0%, rgba(22, 33, 62, 0.9) 100%);
+  border-radius: 20px;
+  padding: 3rem 2.5rem;
+  text-align: center;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5),
+              0 0 0 1px rgba(255, 215, 0, 0.1);
+  transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  position: relative;
+  overflow: hidden;
+  cursor: pointer;
+}
+
+/* Efecto de brillo en hover */
+.home-card::before {
+  content: '';
+  position: absolute;
+  top: -50%;
+  left: -50%;
+  width: 200%;
+  height: 200%;
+  background: linear-gradient(
+    45deg,
+    transparent,
+    rgba(255, 215, 0, 0.1),
+    transparent
+  );
+  transform: rotate(45deg);
+  transition: all 0.6s;
+}
+
+.home-card:hover::before {
+  left: 100%;
+}
+
+.home-card:hover {
+  transform: translateY(-12px) scale(1.02);
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.7),
+              0 0 0 2px rgba(255, 215, 0, 0.3),
+              0 0 30px rgba(255, 215, 0, 0.2);
+}
+
+.home-card:active {
+  transform: translateY(-8px) scale(0.98);
+}
+
+.home-card h2 {
+  font-size: 2rem;
+  margin-bottom: 1.2rem;
+  position: relative;
+  z-index: 1;
+}
+
+.home-card p {
+  color: var(--text-secondary);
+  margin-bottom: 2.5rem;
+  font-size: 1.15rem;
+  line-height: 1.6;
+  position: relative;
+  z-index: 1;
+}
+
+/* Animaciones escalonadas para las cards */
+.home-card.fade-in {
+  animation: fadeInUp 0.6s ease-out both;
+}
+
+.home-card.fade-in:nth-child(1) {
+  animation-delay: 0.1s;
+}
+
+.home-card.fade-in:nth-child(2) {
+  animation-delay: 0.2s;
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Botones mejorados */
+.home-card .btn {
+  position: relative;
+  z-index: 1;
+  overflow: hidden;
+  font-size: 1.2rem;
+  padding: 1.2rem 2.5rem;
+  border-radius: 12px;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+}
+
+.home-card .btn::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 0;
+  height: 0;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.3);
+  transform: translate(-50%, -50%);
+  transition: width 0.5s, height 0.5s;
+}
+
+.home-card .btn:hover::after {
+  width: 300px;
+  height: 300px;
+}
+
+.home-card .btn:hover {
+  transform: scale(1.05);
+  box-shadow: 0 6px 25px rgba(0, 0, 0, 0.4);
+}
+
+.home-info {
+  text-align: center;
+  color: var(--text-secondary);
+  font-size: 1.15rem;
+  margin-top: 3rem;
+  padding: 1.5rem;
+  background: rgba(255, 255, 255, 0.03);
+  border-radius: 12px;
+  border: 1px solid rgba(255, 215, 0, 0.1);
+  animation: fadeIn 1s ease-out 0.6s both;
+}
+
+.home-info p {
+  margin: 0;
+  line-height: 1.8;
+}
+
+@media (max-width: 768px) {
+  .home {
+    padding: 1.5rem;
+  }
+
+  .home-cards {
+    grid-template-columns: 1fr;
+    gap: 2rem;
+  }
+
+  .home-card {
+    padding: 2.5rem 2rem;
+  }
+
+  .home-card h2 {
+    font-size: 1.7rem;
+  }
+
+  .title {
+    font-size: 2.5rem !important;
+  }
+}
