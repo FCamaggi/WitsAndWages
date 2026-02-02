@@ -483,7 +483,6 @@ const PlayerView = () => {
                   </button>
                 )}
               </>
-              </>
             ) : (
               <div className="waiting-message">
                 <div className="success-icon">✓</div>
